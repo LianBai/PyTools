@@ -24,18 +24,56 @@ class Ui_Form(object):
             Form.setObjectName(u"Form")
         Form.setWindowModality(Qt.WindowModal)
         Form.setEnabled(True)
-        Form.resize(342, 420)
+        Form.resize(350, 420)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
         Form.setSizePolicy(sizePolicy)
-        Form.setMinimumSize(QSize(342, 420))
+        Form.setMinimumSize(QSize(350, 420))
         Form.setMaximumSize(QSize(16777215, 16777215))
         Form.setSizeIncrement(QSize(0, 0))
         Form.setBaseSize(QSize(0, 0))
         self.gridLayout_2 = QGridLayout(Form)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.label = QLabel(Form)
+        self.label.setObjectName(u"label")
+
+        self.gridLayout_2.addWidget(self.label, 2, 0, 1, 1)
+
+        self.label_2 = QLabel(Form)
+        self.label_2.setObjectName(u"label_2")
+
+        self.gridLayout_2.addWidget(self.label_2, 3, 0, 1, 1)
+
+        self.SvnPathSearchBtn = QPushButton(Form)
+        self.SvnPathSearchBtn.setObjectName(u"SvnPathSearchBtn")
+
+        self.gridLayout_2.addWidget(self.SvnPathSearchBtn, 3, 3, 1, 1)
+
+        self.ProPath = QLabel(Form)
+        self.ProPath.setObjectName(u"ProPath")
+        self.ProPath.setScaledContents(True)
+        self.ProPath.setAlignment(Qt.AlignCenter)
+        self.ProPath.setWordWrap(False)
+
+        self.gridLayout_2.addWidget(self.ProPath, 2, 1, 1, 2)
+
+        self.SvnExeSearchBtn = QPushButton(Form)
+        self.SvnExeSearchBtn.setObjectName(u"SvnExeSearchBtn")
+
+        self.gridLayout_2.addWidget(self.SvnExeSearchBtn, 4, 3, 1, 1)
+
+        self.ResLinkRefBtn = QPushButton(Form)
+        self.ResLinkRefBtn.setObjectName(u"ResLinkRefBtn")
+
+        self.gridLayout_2.addWidget(self.ResLinkRefBtn, 1, 2, 1, 2)
+
+        self.label_3 = QLabel(Form)
+        self.label_3.setObjectName(u"label_3")
+
+        self.gridLayout_2.addWidget(self.label_3, 4, 0, 1, 1)
+
         self.ResLink = QLabel(Form)
         self.ResLink.setObjectName(u"ResLink")
         font = QFont()
@@ -46,69 +84,15 @@ class Ui_Form(object):
 
         self.gridLayout_2.addWidget(self.ResLink, 0, 0, 2, 2)
 
-        self.UpdateBtn = QPushButton(Form)
-        self.UpdateBtn.setObjectName(u"UpdateBtn")
-
-        self.gridLayout_2.addWidget(self.UpdateBtn, 0, 2, 1, 2)
-
-        self.ResLinkRefBtn = QPushButton(Form)
-        self.ResLinkRefBtn.setObjectName(u"ResLinkRefBtn")
-
-        self.gridLayout_2.addWidget(self.ResLinkRefBtn, 1, 2, 1, 2)
-
-        self.label = QLabel(Form)
-        self.label.setObjectName(u"label")
-
-        self.gridLayout_2.addWidget(self.label, 2, 0, 1, 1)
-
-        self.ProPath = QLabel(Form)
-        self.ProPath.setObjectName(u"ProPath")
-        self.ProPath.setScaledContents(True)
-        self.ProPath.setAlignment(Qt.AlignCenter)
-        self.ProPath.setWordWrap(False)
-
-        self.gridLayout_2.addWidget(self.ProPath, 2, 1, 1, 2)
-
         self.ProPathSearchBtn = QPushButton(Form)
         self.ProPathSearchBtn.setObjectName(u"ProPathSearchBtn")
 
         self.gridLayout_2.addWidget(self.ProPathSearchBtn, 2, 3, 1, 1)
 
-        self.label_2 = QLabel(Form)
-        self.label_2.setObjectName(u"label_2")
+        self.UpdateBtn = QPushButton(Form)
+        self.UpdateBtn.setObjectName(u"UpdateBtn")
 
-        self.gridLayout_2.addWidget(self.label_2, 3, 0, 1, 1)
-
-        self.SvnPath = QLabel(Form)
-        self.SvnPath.setObjectName(u"SvnPath")
-        self.SvnPath.setScaledContents(True)
-        self.SvnPath.setAlignment(Qt.AlignCenter)
-        self.SvnPath.setWordWrap(False)
-
-        self.gridLayout_2.addWidget(self.SvnPath, 3, 1, 1, 2)
-
-        self.SvnPathSearchBtn = QPushButton(Form)
-        self.SvnPathSearchBtn.setObjectName(u"SvnPathSearchBtn")
-
-        self.gridLayout_2.addWidget(self.SvnPathSearchBtn, 3, 3, 1, 1)
-
-        self.label_3 = QLabel(Form)
-        self.label_3.setObjectName(u"label_3")
-
-        self.gridLayout_2.addWidget(self.label_3, 4, 0, 1, 1)
-
-        self.SvnExePath = QLabel(Form)
-        self.SvnExePath.setObjectName(u"SvnExePath")
-        self.SvnExePath.setScaledContents(True)
-        self.SvnExePath.setAlignment(Qt.AlignCenter)
-        self.SvnExePath.setWordWrap(True)
-
-        self.gridLayout_2.addWidget(self.SvnExePath, 4, 1, 1, 2)
-
-        self.SvnExeSearchBtn = QPushButton(Form)
-        self.SvnExeSearchBtn.setObjectName(u"SvnExeSearchBtn")
-
-        self.gridLayout_2.addWidget(self.SvnExeSearchBtn, 4, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.UpdateBtn, 0, 2, 1, 2)
 
         self.BtnsLayout = QGridLayout()
         self.BtnsLayout.setObjectName(u"BtnsLayout")
@@ -223,6 +207,22 @@ class Ui_Form(object):
 
         self.gridLayout_2.addLayout(self.BtnsLayout, 5, 0, 1, 4)
 
+        self.SvnPath = QLabel(Form)
+        self.SvnPath.setObjectName(u"SvnPath")
+        self.SvnPath.setScaledContents(True)
+        self.SvnPath.setAlignment(Qt.AlignCenter)
+        self.SvnPath.setWordWrap(False)
+
+        self.gridLayout_2.addWidget(self.SvnPath, 3, 1, 1, 2)
+
+        self.SvnExePath = QLabel(Form)
+        self.SvnExePath.setObjectName(u"SvnExePath")
+        self.SvnExePath.setScaledContents(True)
+        self.SvnExePath.setAlignment(Qt.AlignCenter)
+        self.SvnExePath.setWordWrap(True)
+
+        self.gridLayout_2.addWidget(self.SvnExePath, 4, 1, 1, 2)
+
 
         self.retranslateUi(Form)
 
@@ -231,18 +231,16 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"\u5de5\u5177", None))
-        self.ResLink.setText(QCoreApplication.translate("Form", u"DEV", None))
-        self.UpdateBtn.setText(QCoreApplication.translate("Form", u"\u9879\u76ee\u66f4\u65b0", None))
-        self.ResLinkRefBtn.setText(QCoreApplication.translate("Form", u"\u5237\u65b0", None))
         self.label.setText(QCoreApplication.translate("Form", u"\u9879\u76ee\u8def\u5f84", None))
-        self.ProPath.setText("")
-        self.ProPathSearchBtn.setText(QCoreApplication.translate("Form", u"\u6d4f\u89c8", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"SVN\u8def\u5f84", None))
-        self.SvnPath.setText("")
         self.SvnPathSearchBtn.setText(QCoreApplication.translate("Form", u"\u6d4f\u89c8", None))
-        self.label_3.setText(QCoreApplication.translate("Form", u"svn\u8f6f\u4ef6\u8def\u5f84", None))
-        self.SvnExePath.setText("")
+        self.ProPath.setText("")
         self.SvnExeSearchBtn.setText(QCoreApplication.translate("Form", u"\u6d4f\u89c8", None))
+        self.ResLinkRefBtn.setText(QCoreApplication.translate("Form", u"\u5237\u65b0", None))
+        self.label_3.setText(QCoreApplication.translate("Form", u"svn\u8f6f\u4ef6\u8def\u5f84", None))
+        self.ResLink.setText(QCoreApplication.translate("Form", u"DEV", None))
+        self.ProPathSearchBtn.setText(QCoreApplication.translate("Form", u"\u6d4f\u89c8", None))
+        self.UpdateBtn.setText(QCoreApplication.translate("Form", u"\u9879\u76ee\u66f4\u65b0", None))
         self.ResDevBtn.setText(QCoreApplication.translate("Form", u"\u5207\u6362\u6210dev\u8d44\u6e90", None))
         self.OpenExcelPathBtn.setText(QCoreApplication.translate("Form", u"\u6253\u5f00\u8868\u683c\u76ee\u5f55", None))
         self.OpenReleasePathBtn.setText(QCoreApplication.translate("Form", u"\u6253\u5f00Release\u76ee\u5f55", None))
@@ -260,5 +258,7 @@ class Ui_Form(object):
         self.OpenServerBtn.setText(QCoreApplication.translate("Form", u"\u542f\u52a8\u672c\u5730\u670d\u52a1\u5668", None))
         self.OpenDevPathBtn.setText(QCoreApplication.translate("Form", u"\u6253\u5f00dev\u76ee\u5f55", None))
         self.CloseServerBtn.setText(QCoreApplication.translate("Form", u"\u5173\u95ed\u672c\u5730\u670d\u52a1\u5668", None))
+        self.SvnPath.setText("")
+        self.SvnExePath.setText("")
     # retranslateUi
 
