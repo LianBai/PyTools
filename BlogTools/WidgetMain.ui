@@ -13,7 +13,7 @@
     <x>0</x>
     <y>0</y>
     <width>293</width>
-    <height>174</height>
+    <height>118</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -102,7 +102,31 @@
    </item>
    <item row="1" column="0" colspan="3">
     <layout class="QGridLayout" name="BtnsLayout">
-     <item row="2" column="0">
+     <item row="0" column="1">
+      <widget class="QPushButton" name="DeployBtn">
+       <property name="font">
+        <font>
+         <stylestrategy>PreferDefault</stylestrategy>
+        </font>
+       </property>
+       <property name="text">
+        <string>部署</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="OpenPostPathBtn">
+       <property name="font">
+        <font>
+         <stylestrategy>PreferDefault</stylestrategy>
+        </font>
+       </property>
+       <property name="text">
+        <string>打开文章目录</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
       <widget class="QPushButton" name="OpenBlogPathBtn">
        <property name="font">
         <font>
@@ -126,66 +150,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="CreatUnityEssayBtn">
-       <property name="font">
-        <font>
-         <stylestrategy>PreferDefault</stylestrategy>
-        </font>
-       </property>
-       <property name="text">
-        <string>创建unity杂文</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QPushButton" name="CreatMyNoteBtn">
-       <property name="font">
-        <font>
-         <stylestrategy>PreferDefault</stylestrategy>
-        </font>
-       </property>
-       <property name="text">
-        <string>创建个人笔记</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="OpenPostPathBtn">
-       <property name="font">
-        <font>
-         <stylestrategy>PreferDefault</stylestrategy>
-        </font>
-       </property>
-       <property name="text">
-        <string>打开文章目录</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="CreatPythonEssayBtn">
-       <property name="font">
-        <font>
-         <stylestrategy>PreferDefault</stylestrategy>
-        </font>
-       </property>
-       <property name="text">
-        <string>创建Python杂文</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="DeployBtn">
-       <property name="font">
-        <font>
-         <stylestrategy>PreferDefault</stylestrategy>
-        </font>
-       </property>
-       <property name="text">
-        <string>部署</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="QPushButton" name="DebugBtn">
        <property name="enabled">
@@ -198,6 +162,18 @@
        </property>
        <property name="text">
         <string>Debug调试</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="CreatPostBtn">
+       <property name="font">
+        <font>
+         <stylestrategy>PreferDefault</stylestrategy>
+        </font>
+       </property>
+       <property name="text">
+        <string>创建文章</string>
        </property>
       </widget>
      </item>

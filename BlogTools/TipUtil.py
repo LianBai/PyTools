@@ -63,7 +63,7 @@ def ShowLogDialog(nameDes, process, parent=None, encoding="utf-8"):
                 log.append("执行完成")
                 break
             # 向子进程的标准输入中写入一个空行，跳过pause命令
-            process.stdin.write(b"\n")
+            # process.stdin.write(b"\n")
             # 刷新标准输入缓冲区
             process.stdin.flush()
         # 判断批处理文件执行结果
@@ -89,3 +89,4 @@ def ShowLogDialogNoExit(nameDes, process, parent=None, encoding="utf-8"):
             log.append(output)
     except Exception as e:
         ShowTipDialog(f"执行{nameDes}失败{e}", "错误", log)
+    log.exec()

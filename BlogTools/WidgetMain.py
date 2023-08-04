@@ -24,7 +24,7 @@ class Ui_MainWidget(object):
             MainWidget.setObjectName(u"MainWidget")
         MainWidget.setWindowModality(Qt.WindowModal)
         MainWidget.setEnabled(True)
-        MainWidget.resize(293, 174)
+        MainWidget.resize(293, 118)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -62,13 +62,25 @@ class Ui_MainWidget(object):
 
         self.BtnsLayout = QGridLayout()
         self.BtnsLayout.setObjectName(u"BtnsLayout")
-        self.OpenBlogPathBtn = QPushButton(MainWidget)
-        self.OpenBlogPathBtn.setObjectName(u"OpenBlogPathBtn")
+        self.DeployBtn = QPushButton(MainWidget)
+        self.DeployBtn.setObjectName(u"DeployBtn")
         font1 = QFont()
         font1.setStyleStrategy(QFont.PreferDefault)
+        self.DeployBtn.setFont(font1)
+
+        self.BtnsLayout.addWidget(self.DeployBtn, 0, 1, 1, 1)
+
+        self.OpenPostPathBtn = QPushButton(MainWidget)
+        self.OpenPostPathBtn.setObjectName(u"OpenPostPathBtn")
+        self.OpenPostPathBtn.setFont(font1)
+
+        self.BtnsLayout.addWidget(self.OpenPostPathBtn, 1, 1, 1, 1)
+
+        self.OpenBlogPathBtn = QPushButton(MainWidget)
+        self.OpenBlogPathBtn.setObjectName(u"OpenBlogPathBtn")
         self.OpenBlogPathBtn.setFont(font1)
 
-        self.BtnsLayout.addWidget(self.OpenBlogPathBtn, 2, 0, 1, 1)
+        self.BtnsLayout.addWidget(self.OpenBlogPathBtn, 1, 0, 1, 1)
 
         self.DeployPushBtn = QPushButton(MainWidget)
         self.DeployPushBtn.setObjectName(u"DeployPushBtn")
@@ -76,42 +88,18 @@ class Ui_MainWidget(object):
 
         self.BtnsLayout.addWidget(self.DeployPushBtn, 0, 2, 1, 1)
 
-        self.CreatUnityEssayBtn = QPushButton(MainWidget)
-        self.CreatUnityEssayBtn.setObjectName(u"CreatUnityEssayBtn")
-        self.CreatUnityEssayBtn.setFont(font1)
-
-        self.BtnsLayout.addWidget(self.CreatUnityEssayBtn, 1, 0, 1, 1)
-
-        self.CreatMyNoteBtn = QPushButton(MainWidget)
-        self.CreatMyNoteBtn.setObjectName(u"CreatMyNoteBtn")
-        self.CreatMyNoteBtn.setFont(font1)
-
-        self.BtnsLayout.addWidget(self.CreatMyNoteBtn, 1, 2, 1, 1)
-
-        self.OpenPostPathBtn = QPushButton(MainWidget)
-        self.OpenPostPathBtn.setObjectName(u"OpenPostPathBtn")
-        self.OpenPostPathBtn.setFont(font1)
-
-        self.BtnsLayout.addWidget(self.OpenPostPathBtn, 2, 1, 1, 1)
-
-        self.CreatPythonEssayBtn = QPushButton(MainWidget)
-        self.CreatPythonEssayBtn.setObjectName(u"CreatPythonEssayBtn")
-        self.CreatPythonEssayBtn.setFont(font1)
-
-        self.BtnsLayout.addWidget(self.CreatPythonEssayBtn, 1, 1, 1, 1)
-
-        self.DeployBtn = QPushButton(MainWidget)
-        self.DeployBtn.setObjectName(u"DeployBtn")
-        self.DeployBtn.setFont(font1)
-
-        self.BtnsLayout.addWidget(self.DeployBtn, 0, 1, 1, 1)
-
         self.DebugBtn = QPushButton(MainWidget)
         self.DebugBtn.setObjectName(u"DebugBtn")
         self.DebugBtn.setEnabled(True)
         self.DebugBtn.setFont(font1)
 
         self.BtnsLayout.addWidget(self.DebugBtn, 0, 0, 1, 1)
+
+        self.CreatPostBtn = QPushButton(MainWidget)
+        self.CreatPostBtn.setObjectName(u"CreatPostBtn")
+        self.CreatPostBtn.setFont(font1)
+
+        self.BtnsLayout.addWidget(self.CreatPostBtn, 1, 2, 1, 1)
 
 
         self.gridLayout.addLayout(self.BtnsLayout, 1, 0, 1, 3)
@@ -127,13 +115,11 @@ class Ui_MainWidget(object):
         self.BlogLabel.setText(QCoreApplication.translate("MainWidget", u"\u9879\u76ee\u8def\u5f84", None))
         self.BlogPath.setText(QCoreApplication.translate("MainWidget", u"F:MyToolsPyToolsTWTools", None))
         self.BlogPathSearchBtn.setText(QCoreApplication.translate("MainWidget", u"\u6d4f\u89c8", None))
+        self.DeployBtn.setText(QCoreApplication.translate("MainWidget", u"\u90e8\u7f72", None))
+        self.OpenPostPathBtn.setText(QCoreApplication.translate("MainWidget", u"\u6253\u5f00\u6587\u7ae0\u76ee\u5f55", None))
         self.OpenBlogPathBtn.setText(QCoreApplication.translate("MainWidget", u"\u6253\u5f00\u535a\u5ba2\u76ee\u5f55", None))
         self.DeployPushBtn.setText(QCoreApplication.translate("MainWidget", u"\u90e8\u7f72\u5e76\u63a8\u9001", None))
-        self.CreatUnityEssayBtn.setText(QCoreApplication.translate("MainWidget", u"\u521b\u5efaunity\u6742\u6587", None))
-        self.CreatMyNoteBtn.setText(QCoreApplication.translate("MainWidget", u"\u521b\u5efa\u4e2a\u4eba\u7b14\u8bb0", None))
-        self.OpenPostPathBtn.setText(QCoreApplication.translate("MainWidget", u"\u6253\u5f00\u6587\u7ae0\u76ee\u5f55", None))
-        self.CreatPythonEssayBtn.setText(QCoreApplication.translate("MainWidget", u"\u521b\u5efaPython\u6742\u6587", None))
-        self.DeployBtn.setText(QCoreApplication.translate("MainWidget", u"\u90e8\u7f72", None))
         self.DebugBtn.setText(QCoreApplication.translate("MainWidget", u"Debug\u8c03\u8bd5", None))
+        self.CreatPostBtn.setText(QCoreApplication.translate("MainWidget", u"\u521b\u5efa\u6587\u7ae0", None))
     # retranslateUi
 

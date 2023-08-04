@@ -56,7 +56,7 @@ class MainWindow(QWidget, Ui_MainWidget):
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             originalPath = os.getcwd()
             os.chdir(config["BlogPath"])
-            process = subprocess.Popen(["hexo", "clean", "&&", "hexo", "g", "-d"], stdout=subprocess.PIPE,
+            process = subprocess.Popen("hexo clean && hexo g -d", stdout=subprocess.PIPE,
                                        stderr=subprocess.STDOUT, shell=True, stdin=subprocess.PIPE)
             ShowLogDialog("部署", process, self)
             os.chdir(originalPath)
@@ -68,10 +68,17 @@ class MainWindow(QWidget, Ui_MainWidget):
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             originalPath = os.getcwd()
             os.chdir(config["BlogPath"])
-            process = subprocess.Popen(["hexo", "clean", "&&", "hexo", "g", "-d", "&&", "git", "add", ".", "&&", "git",
-                                        "status", "&&", "git", "commit", "-m", "backups", "&&", "git", "pull",
-                                        "--rebase", "origin", "master", "&&", "git", "push"], stdout=subprocess.PIPE,
-                                       stderr=subprocess.STDOUT, shell=True, stdin=subprocess.PIPE)
+            # 检查是否有修改
+            status = subprocess.check_output(['git', 'status', '--porcelain'])
+            if status:
+                # 有修改，执行commit和push命令
+                cmd = ("hexo clean && hexo g -d && git add . && git commit -m 'backups' && git pull --rebase origin "
+                       "master && git push")
+            else:
+                # 没有修改，只执行clean和generate命令
+                cmd = "hexo clean && hexo g -d"
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True,
+                                       stdin=subprocess.PIPE)
             ShowLogDialog("部署并上传", process, self)
             os.chdir(originalPath)
         else:

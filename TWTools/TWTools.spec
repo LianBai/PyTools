@@ -41,5 +41,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['E:\\PyPrograme\\TWTools\\TWTools.ico'],
+    icon=['TWTools.ico'],
 )
