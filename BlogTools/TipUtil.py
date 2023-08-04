@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QDialog, QApplication
 
 from LogWidget import Ui_LogWidget
 from TipWidget import Ui_TipWidget
+from CreatePostWidget import Ui_CreatePostsForm
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')

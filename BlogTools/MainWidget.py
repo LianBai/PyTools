@@ -11,6 +11,7 @@ from WidgetMain import Ui_MainWidget
 from FileUtil import SearchDir
 from JsonUtil import LoadJsonData, SaveJsonData
 from TipUtil import ShowTipDialog, ShowLogDialog, ShowLogDialogNoExit
+from CreatePost import ShowCreatePostsDialog
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
@@ -27,6 +28,7 @@ class MainWindow(QWidget, Ui_MainWidget):
         self.DeployPushBtn.clicked.connect(self.DeployPushBtnClicked)
         self.OpenBlogPathBtn.clicked.connect(self.OpenBlogPathBtnClicked)
         self.OpenPostPathBtn.clicked.connect(self.OpenPostPathBtnClicked)
+        self.CreatPostBtn.clicked.connect(self.CreatPostBtnClicked)
 
     def BlogPathSearchBtnClicked(self):
         config = LoadJsonData()
@@ -95,5 +97,12 @@ class MainWindow(QWidget, Ui_MainWidget):
         config = LoadJsonData()
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             os.startfile(os.path.join(config["BlogPath"], "source", "_posts"))
+        else:
+            ShowTipDialog("博客文件夹不存在", "错误", self)
+
+    def CreatPostBtnClicked(self):
+        config = LoadJsonData()
+        if "BlogPath" in config and os.path.exists(config["BlogPath"]):
+            ShowCreatePostsDialog(self)
         else:
             ShowTipDialog("博客文件夹不存在", "错误", self)
