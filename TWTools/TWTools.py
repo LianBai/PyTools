@@ -14,6 +14,7 @@ if __name__ == '__main__':
     if "ProPath" in config and os.path.exists(config["ProPath"]):
         main.ProPath.setText(config["ProPath"])
         main.RefreshBranch()
+        main.RefreshSvnPath()
     else:
         main.ProPathSearchBtnClicked()
     if "SvnExePath" in config and os.path.exists(config["SvnExePath"]):

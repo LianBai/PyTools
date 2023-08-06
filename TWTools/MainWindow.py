@@ -134,35 +134,30 @@ class MainWindow(QWidget, Ui_Form):
         if process is not None:
             process.wait()
         if isSuc:
-            # 获取软链地址
-            link_path = self.RefreshResLink()
-            if link_path is None or os.path.abspath(link_path) != os.path.abspath(svnPath):
-                # 获取Unity工程目录
-                proAssetsPath = os.path.join(proPathDes, "client", "client", "Assets")
-                # 删除Unity工程中的文件夹
-                self.logDialog.append("正在删除 Unity 工程中的文件夹...")
-                MakeLink(os.path.join(svnPath, "_Scenes"), os.path.join(proAssetsPath, "_Scenes"), self.logDialog)
-                MakeLink(os.path.join(svnPath, "_Icons"), os.path.join(proAssetsPath, "_Icons"), self.logDialog)
+            # 获取Unity工程目录
+            proAssetsPath = os.path.join(proPathDes, "client", "client", "Assets")
+            # 删除Unity工程中的文件夹
+            self.logDialog.append("正在删除 Unity 工程中的文件夹...")
+            MakeLink(os.path.join(svnPath, "_Scenes"), os.path.join(proAssetsPath, "_Scenes"), self.logDialog)
+            MakeLink(os.path.join(svnPath, "_Icons"), os.path.join(proAssetsPath, "_Icons"), self.logDialog)
 
-                # 创建资源目录软链接
-                self.logDialog.append("正在创建资源目录软链接...")
-                root_dir = os.path.join(svnPath, "_Resources")
-                for dirname in os.listdir(root_dir):
-                    src_dir = os.path.join(root_dir, dirname)
-                    if os.path.isdir(src_dir):
-                        dst_dir = os.path.join(proAssetsPath, "_Resources", dirname)
-                        MakeLink(src_dir, dst_dir, self.logDialog)
+            # 创建资源目录软链接
+            self.logDialog.append("正在创建资源目录软链接...")
+            root_dir = os.path.join(svnPath, "_Resources")
+            for dirname in os.listdir(root_dir):
+                src_dir = os.path.join(root_dir, dirname)
+                if os.path.isdir(src_dir):
+                    dst_dir = os.path.join(proAssetsPath, "_Resources", dirname)
+                    MakeLink(src_dir, dst_dir, self.logDialog)
 
-                # 创建美术目录软链接
-                self.logDialog.append("正在创建美术目录软链接...")
-                root_dir = os.path.join(svnPath, "_Art")
-                for dirname in os.listdir(root_dir):
-                    src_dir = os.path.join(root_dir, dirname)
-                    if os.path.isdir(src_dir):
-                        dst_dir = os.path.join(proAssetsPath, "_Art", dirname)
-                        MakeLink(src_dir, dst_dir, self.logDialog)
-            else:
-                self.logDialog.append("软链地址和SVN地址相同，不需要创建软链！")
+            # 创建美术目录软链接
+            self.logDialog.append("正在创建美术目录软链接...")
+            root_dir = os.path.join(svnPath, "_Art")
+            for dirname in os.listdir(root_dir):
+                src_dir = os.path.join(root_dir, dirname)
+                if os.path.isdir(src_dir):
+                    dst_dir = os.path.join(proAssetsPath, "_Art", dirname)
+                    MakeLink(src_dir, dst_dir, self.logDialog)
 
             # 刷新资源链接
             self.RefreshResLink()
