@@ -2,8 +2,11 @@ import json
 import os
 import sys
 
+from TipUtil import ShowTipDialog
+
 # 读取JSON文件
 config_file = 'Config.json'
+PostConfig_file = 'PostConfig.json'
 
 
 def exe_path():
@@ -14,27 +17,48 @@ def exe_path():
     return path_py  # 没打包前的py目录
 
 
-SavePath = exe_path()
+SavePath = os.path.join(exe_path(), "save")
 
 
-def LoadJsonData():
-    # # 获取Python脚本所在的工程目录
-    # pro_dir = os.path.dirname(os.path.abspath(__file__))
-    # 回到工程目录
+def LoadConfigJsonData():
+    return LoadJsonData(config_file)
+
+
+def SaveConfigJsonData(config):
+    SaveJsonData(config_file, config)
+
+
+def LoadPostConfigJsonData():
+    return LoadJsonData(PostConfig_file)
+
+
+def SavePostConfigJsonData(config):
+    SaveJsonData(PostConfig_file, config)
+
+
+def LoadJsonData(jsonName):
+    if not os.path.exists(SavePath):
+        os.makedirs(SavePath)
     os.chdir(SavePath)
-    if os.path.exists(config_file):
-        with open(config_file, 'r') as f:
-            config = json.load(f)
-    else:
-        # 创建JSON文件
-        config = {"ProPath": ""}
-        with open(config_file, 'w') as f:
-            json.dump(config, f)
+    try:
+        if os.path.exists(jsonName):
+            with open(jsonName, 'r', encoding="utf-8") as f:
+                config = json.load(f)
+        else:
+            # 创建JSON文件
+            config = {}
+            with open(jsonName, 'w', encoding="utf-8") as f:
+                json.dump(config, f)
+    except Exception as e:
+        ShowTipDialog(f"读取配置文件错误:{e}")
+        config = {}
     return config
 
 
-def SaveJsonData(config):
+def SaveJsonData(jsonName, config):
     # 回到工程目录
+    if not os.path.exists(SavePath):
+        os.makedirs(SavePath)
     os.chdir(SavePath)
-    with open(config_file, 'w') as f:
+    with open(jsonName, 'w') as f:
         json.dump(config, f)

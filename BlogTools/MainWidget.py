@@ -9,7 +9,7 @@ from PySide6.QtGui import QIcon
 
 from WidgetMain import Ui_MainWidget
 from FileUtil import SearchDir
-from JsonUtil import LoadJsonData, SaveJsonData
+from JsonUtil import LoadConfigJsonData, SaveConfigJsonData
 from TipUtil import ShowTipDialog, ShowLogDialog, ShowLogDialogNoExit
 from CreatePost import ShowCreatePostsDialog
 
@@ -31,15 +31,15 @@ class MainWindow(QWidget, Ui_MainWidget):
         self.CreatPostBtn.clicked.connect(self.CreatPostBtnClicked)
 
     def BlogPathSearchBtnClicked(self):
-        config = LoadJsonData()
+        config = LoadConfigJsonData()
         path = SearchDir("选择博客文件夹", self)
         if path:
             self.BlogPath.setText(path)
             config["BlogPath"] = path
-            SaveJsonData(config)
+            SaveConfigJsonData(config)
 
     def DebugBtnClicked(self):
-        config = LoadJsonData()
+        config = LoadConfigJsonData()
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             originalPath = os.getcwd()
             os.chdir(config["BlogPath"])
@@ -54,7 +54,7 @@ class MainWindow(QWidget, Ui_MainWidget):
             ShowTipDialog("博客文件夹不存在", "错误", self)
 
     def DeployBtnClicked(self):
-        config = LoadJsonData()
+        config = LoadConfigJsonData()
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             originalPath = os.getcwd()
             os.chdir(config["BlogPath"])
@@ -66,7 +66,7 @@ class MainWindow(QWidget, Ui_MainWidget):
             ShowTipDialog("博客文件夹不存在", "错误", self)
 
     def DeployPushBtnClicked(self):
-        config = LoadJsonData()
+        config = LoadConfigJsonData()
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             originalPath = os.getcwd()
             os.chdir(config["BlogPath"])
@@ -87,21 +87,21 @@ class MainWindow(QWidget, Ui_MainWidget):
             ShowTipDialog("博客文件夹不存在", "错误", self)
 
     def OpenBlogPathBtnClicked(self):
-        config = LoadJsonData()
+        config = LoadConfigJsonData()
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             os.startfile(config["BlogPath"])
         else:
             ShowTipDialog("博客文件夹不存在", "错误", self)
 
     def OpenPostPathBtnClicked(self):
-        config = LoadJsonData()
+        config = LoadConfigJsonData()
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             os.startfile(os.path.join(config["BlogPath"], "source", "_posts"))
         else:
             ShowTipDialog("博客文件夹不存在", "错误", self)
 
     def CreatPostBtnClicked(self):
-        config = LoadJsonData()
+        config = LoadConfigJsonData()
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             ShowCreatePostsDialog(self)
         else:

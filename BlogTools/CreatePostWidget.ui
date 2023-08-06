@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>360</width>
-    <height>100</height>
+    <height>170</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -37,32 +37,58 @@
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="CreateBtn">
+   <property name="geometry">
+    <rect>
+     <x>95</x>
+     <y>140</y>
+     <width>170</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>创建</string>
+   </property>
+  </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>54</y>
-     <width>341</width>
-     <height>31</height>
+     <x>13</x>
+     <y>57</y>
+     <width>331</width>
+     <height>74</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
      <widget class="QLabel" name="label">
       <property name="text">
        <string>文章名字</string>
       </property>
      </widget>
     </item>
-    <item>
+    <item row="0" column="1">
      <widget class="QLineEdit" name="PostsNameLineEdit"/>
     </item>
-    <item>
-     <widget class="QPushButton" name="CreateBtn">
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>创建</string>
+       <string>文章种类(categories)</string>
       </property>
      </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="PostsCategoriesLineEdit"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>文章标签(Tag)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="PostsTagLineEdit"/>
     </item>
    </layout>
   </widget>
