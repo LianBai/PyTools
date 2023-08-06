@@ -43,12 +43,7 @@ class MainWindow(QWidget, Ui_MainWidget):
         if "BlogPath" in config and os.path.exists(config["BlogPath"]):
             originalPath = os.getcwd()
             os.chdir(config["BlogPath"])
-            process = subprocess.Popen("hexo clean && hexo g && hexo s --debug", stdout=subprocess.PIPE,
-                                       stderr=subprocess.STDOUT, shell=True, stdin=subprocess.PIPE)
-            # ShowLogDialogNoExit("执行调试", process)
-            # 创建一个线程来实时捕获批处理文件的输出并将其打印到面板上
-            thread = threading.Thread(target=ShowLogDialogNoExit, args=("执行调试", process))
-            thread.start()
+            subprocess.Popen(['cmd.exe', '/c', 'hexo clean && hexo g && hexo s --debug'])
             os.chdir(originalPath)
         else:
             ShowTipDialog("博客文件夹不存在", "错误", self)

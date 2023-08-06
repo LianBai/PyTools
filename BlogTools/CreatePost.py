@@ -93,7 +93,7 @@ class CreatePostsDialog(QDialog, Ui_CreatePostsForm):
                 f.write(f'date: {str(timestamp)}\n')
                 f.write('---\n\n')
             ShowTipDialog("创建成功", "成功", self)
-            OpenPath(postPath)
+            OpenPath(postPath, self)
         except Exception as e:
             ShowTipDialog(f"创建失败:{e}", "错误", self)
         os.chdir(originalPath)
