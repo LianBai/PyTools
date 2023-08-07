@@ -3,17 +3,17 @@ import os
 import subprocess
 import sys
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QTextCursor, QIcon, QFontMetrics
-from PySide6.QtWidgets import QWidget, QDialog, QTextEdit, QFileDialog, QApplication
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QTextCursor, QFontMetrics
+from PyQt5.QtWidgets import QDialog, QWidget, QFileDialog, QTextEdit, QApplication
 from watchdog.observers import Observer
 
 from FileUtil import OpenPath, MakeLink
 from GitBranchHandler import GitBranchHandler
-from roommain import Ui_Form
+from roommain_ui import Ui_Form
 from JsonUtil import SaveJsonData, LoadJsonData
-from TipWidget import Ui_TipWidget
-from LogWidget import Ui_LogWidget
+from TipWidget_ui import Ui_TipWidget
+from LogWidget_ui import Ui_LogWidget
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
@@ -488,6 +488,7 @@ class MainWindow(QWidget, Ui_Form):
                                     stderr=subprocess.STDOUT, shell=True,
                                     stdin=subprocess.PIPE).stdout.decode("utf-8").strip()
             self.GitLink.setText(result[result.rfind("/")+1:])
+            self.GitLink.setText(result)
         else:
             self.GitLink.setText(UnKnowDes)
         self.AutoLabelFontSize(self.GitLink)

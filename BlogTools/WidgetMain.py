@@ -111,7 +111,7 @@ class Ui_MainWidget(object):
     # setupUi
 
     def retranslateUi(self, MainWidget):
-        MainWidget.setWindowTitle(QCoreApplication.translate("MainWidget", u"\u5de5\u5177", None))
+        MainWidget.setWindowTitle(QCoreApplication.translate("MainWidget", u"\u535a\u5ba2\u5de5\u5177", None))
         self.BlogLabel.setText(QCoreApplication.translate("MainWidget", u"\u9879\u76ee\u8def\u5f84", None))
         self.BlogPath.setText(QCoreApplication.translate("MainWidget", u"F:MyToolsPyToolsTWTools", None))
         self.BlogPathSearchBtn.setText(QCoreApplication.translate("MainWidget", u"\u6d4f\u89c8", None))
