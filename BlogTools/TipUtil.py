@@ -3,13 +3,13 @@ import os
 import sys
 import subprocess
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QIcon, QTextCursor
-from PySide6.QtWidgets import QDialog, QApplication
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QTextCursor
+from PyQt5.QtWidgets import QDialog, QApplication
 
-from LogWidget import Ui_LogWidget
-from TipWidget import Ui_TipWidget
-from CreatePostWidget import Ui_CreatePostsForm
+from LogWidget_ui import Ui_LogWidget
+from TipWidget_ui import Ui_TipWidget
+from CreatePostWidget_ui import Ui_CreatePostsForm
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')

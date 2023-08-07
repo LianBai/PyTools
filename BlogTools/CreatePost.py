@@ -1,10 +1,11 @@
 import os
 
 from datetime import datetime
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QDialog
 
-from CreatePostWidget import Ui_CreatePostsForm
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QDialog
+
+from CreatePostWidget_ui import Ui_CreatePostsForm
 from TipUtil import ShowTipDialog
 from JsonUtil import LoadConfigJsonData, SaveConfigJsonData, LoadPostConfigJsonData, SavePostConfigJsonData
 from FileUtil import OpenPath

@@ -2,12 +2,11 @@ import io
 import os
 import subprocess
 import sys
-import threading
 
-from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QIcon
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QWidget
 
-from WidgetMain import Ui_MainWidget
+from WidgetMain_ui import Ui_MainWidget
 from FileUtil import SearchDir
 from JsonUtil import LoadConfigJsonData, SaveConfigJsonData
 from TipUtil import ShowTipDialog, ShowLogDialog, ShowLogDialogNoExit

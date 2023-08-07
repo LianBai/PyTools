@@ -1,6 +1,6 @@
 import os
 
-from PySide6.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog
 
 
 def SearchDir(searchDes, showWidget):
