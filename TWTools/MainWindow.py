@@ -55,14 +55,14 @@ class MainWindow(QWidget, Ui_Form):
         self.setupUi(self)
         self.GitLink.setWordWrap(True)
         self.ResLink.setText(UnKnowDes)
-        self.UpdateBtn.clicked.connect(self.UpdateBtnClicked)
+        self.GitUpdateBtn.clicked.connect(self.UpdateGitBranch)
+        self.SvnUpdateBtn.clicked.connect(self.UpdateSvnBranch)
         self.ResDevBtn.clicked.connect(self.ResDevBtnClicked)
         self.ResTrunkBtn.clicked.connect(self.ResTruckBtnClicked)
         self.ResReleaseBtn.clicked.connect(self.ResReleaseBtnClicked)
         self.ProPathSearchBtn.clicked.connect(self.ProPathSearchBtnClicked)
         self.SvnPathSearchBtn.clicked.connect(self.SvnPathSearchBtnClicked)
         self.SvnExeSearchBtn.clicked.connect(self.SvnExeSearchBtnClicked)
-        self.ResLinkRefBtn.clicked.connect(self.RefreshResLink)
         self.GuideTabelBtn.clicked.connect(self.GuideTabelBtnClicked)
         self.SvnCommitBtn.clicked.connect(self.SvnCommitBtnClicked)
         self.GuideProtobufBtn.clicked.connect(self.GuideProtobufBtnClicked)
@@ -101,13 +101,54 @@ class MainWindow(QWidget, Ui_Form):
                     if process is not None:
                         process.wait()
                 else:
-                    self.logDialog.append("未设置资源链接，SVN无法更新资源...")
-
+                    self.ShowTipDialog("未设置资源链接，SVN无法更新资源...")
                 os.chdir(originalPath)
             else:
                 self.ShowTipDialog("错误","SVN目录不存在，请重新设置")
         else:
             self.ShowTipDialog("错误","项目目录不存在，请重新设置")
+
+    def UpdateGitBranch(self):
+        config = LoadJsonData()
+        if "ProPath" in config and os.path.exists(config["ProPath"]):
+            proPath = config["ProPath"]
+            originalPath = os.getcwd()
+            self.logDialog = LogDialog(self)
+            self.logDialog.show()
+            os.chdir(proPath)
+            process = self.UpdateGit()
+            if process.returncode == 0:
+                self.ShowTipDialog("成功", "GIT更新成功！")
+            else:
+                self.ShowTipDialog("错误", "GIT更新失败！")
+            process.wait()
+            os.chdir(originalPath)
+        else:
+            self.ShowTipDialog("错误","项目目录不存在，请重新设置")
+
+    def UpdateSvnBranch(self):
+        config = LoadJsonData()
+
+        if "SvnPath" in config and os.path.exists(config["SvnPath"]):
+            svnPath = config["SvnPath"]
+            originalPath = os.getcwd()
+            os.chdir(svnPath)
+            self.logDialog = LogDialog(self)
+            self.logDialog.show()
+            if self.ResLink.text() != UnKnowDes:
+                os.chdir(os.path.join(svnPath, self.ResLink.text()))
+                process, isSuc = self.UpdateSvn(self.ResLink.text())
+                if isSuc:
+                    self.ShowTipDialog("成功", "SVN更新成功！")
+                else:
+                    self.ShowTipDialog("错误", "SVN更新失败！")
+                if process is not None:
+                    process.wait()
+            else:
+                self.ShowTipDialog("错误", "未设置资源链接，SVN无法更新资源...")
+            os.chdir(originalPath)
+        else:
+            self.ShowTipDialog("错误","SVN目录不存在，请重新设置")
 
     def ResDevBtnClicked(self):
         self.SwitchResLink("dev")
@@ -489,7 +530,6 @@ class MainWindow(QWidget, Ui_Form):
                                     stderr=subprocess.STDOUT, shell=True,
                                     stdin=subprocess.PIPE).stdout.decode("utf-8").strip()
             self.GitLink.setText(result[result.rfind("/")+1:])
-            self.GitLink.setText(result)
         else:
             self.GitLink.setText(UnKnowDes)
         self.AutoLabelFontSize(self.GitLink)

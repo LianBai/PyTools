@@ -2,6 +2,7 @@ import ctypes
 import os
 import sys
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 
 from MainWindow import MainWindow, TipWidget
@@ -25,10 +26,7 @@ if __name__ == '__main__':
         main.show()
         app.focusChanged.connect(main.RefreshBranch)
     else:
-        tip = TipWidget()
-        tip.show()
-        tip.setWindowTitle("错误")
-        tip.label.setText("请以管理员身份运行程序！")
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
     sys.exit(app.exec())
 
 
