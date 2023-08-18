@@ -15,6 +15,7 @@ from roommain_ui import Ui_Form
 from JsonUtil import SaveJsonData, LoadJsonData
 from TipWidget_ui import Ui_TipWidget
 from LogWidget_ui import Ui_LogWidget
+from AppConfig_ui import Ui_AppConfig
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
@@ -29,9 +30,9 @@ class TipWidget(QDialog, Ui_TipWidget):
         self.setupUi(self)
 
 
-class LogDialog(QDialog, Ui_LogWidget):
+class LogWidget(QDialog, Ui_LogWidget):
     def __init__(self, parent=None):
-        super(LogDialog, self).__init__(parent)
+        super(LogWidget, self).__init__(parent)
         self.setWindowIcon(QIcon("TWTools.ico"))
         self.setupUi(self)
 
@@ -44,9 +45,47 @@ class LogDialog(QDialog, Ui_LogWidget):
         self.logText.moveCursor(QTextCursor.End)
 
 
+class ConfigAppWidget(QDialog, Ui_AppConfig):
+    def __init__(self, parent=None):
+        super(ConfigAppWidget, self).__init__(parent)
+        self.dialog = None
+        self.setWindowIcon(QIcon("TWTools.ico"))
+        self.setupUi(self)
+        config = LoadJsonData()
+        if "SvnExePath" in config and os.path.exists(config["SvnExePath"]):
+            self.SvnExePath.setText(config["SvnExePath"])
+        if "HubExePath" in config and os.path.exists(config["HubExePath"]):
+            self.HubPath.setText(config["HubExePath"])
+        self.SvnExeSearchBtn.clicked.connect(self.SvnExeSearchBtnClicked)
+        self.HubPathSearchBtn.clicked.connect(self.HubSearchBtnClicked)
+
+    def SvnExeSearchBtnClicked(self):
+        config = LoadJsonData()
+        self.dialog = QFileDialog(self, "选择TortoiseProc.exe软件", "./")
+        self.dialog.setFileMode(QFileDialog.ExistingFile)
+        self.dialog.setNameFilter("Executable files (TortoiseProc.exe)")
+        if self.dialog.exec() == QDialog.Accepted:
+            file_path = self.dialog.selectedFiles()[0]
+            self.SvnExePath.setText(file_path)
+            config["SvnExePath"] = file_path
+            SaveJsonData(config)
+
+    def HubSearchBtnClicked(self):
+        config = LoadJsonData()
+        self.dialog = QFileDialog(self, "选择Unity Hub.exe软件", "./")
+        self.dialog.setFileMode(QFileDialog.ExistingFile)
+        self.dialog.setNameFilter("Executable files (*.exe)")
+        if self.dialog.exec() == QDialog.Accepted:
+            file_path = self.dialog.selectedFiles()[0]
+            self.HubPath.setText(file_path)
+            config["HubExePath"] = file_path
+            SaveJsonData(config)
+
+
 class MainWindow(QWidget, Ui_Form):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+        self.AppConfigTip = None
         self.event_handler = None
         self.observer = None
         self.logDialog = None
@@ -55,8 +94,10 @@ class MainWindow(QWidget, Ui_Form):
         self.setupUi(self)
         self.GitLink.setWordWrap(True)
         self.ResLink.setText(UnKnowDes)
+        self.UpdateBtn.clicked.connect(self.UpdateBtnClicked)
         self.GitUpdateBtn.clicked.connect(self.UpdateGitBranch)
         self.SvnUpdateBtn.clicked.connect(self.UpdateSvnBranch)
+        self.ConfigBtn.clicked.connect(self.ConfigBtnClicked)
         self.ResDevBtn.clicked.connect(self.ResDevBtnClicked)
         self.ResTrunkBtn.clicked.connect(self.ResTruckBtnClicked)
         self.ResReleaseBtn.clicked.connect(self.ResReleaseBtnClicked)
@@ -90,7 +131,7 @@ class MainWindow(QWidget, Ui_Form):
                 svnPath = config["SvnPath"]
                 originalPath = os.getcwd()
                 os.chdir(proPath)
-                self.logDialog = LogDialog(self)
+                self.logDialog = LogWidget(self)
                 self.logDialog.show()
                 process = self.UpdateGit()
                 process.wait()
@@ -98,29 +139,35 @@ class MainWindow(QWidget, Ui_Form):
                     self.logDialog.append(f"开始更新svn的{self.ResLink.text()}资源...")
                     os.chdir(os.path.join(svnPath, self.ResLink.text()))
                     process, isSuc = self.UpdateSvn(self.ResLink.text())
+                    if isSuc:
+                        self.ShowTipDialog("成功", "更新完成！")
+                    else:
+                        error = process.stdout.read() or process.stderr.read()
+                        self.ShowTipDialog("错误", f"SVN更新失败！\n{error}")
                     if process is not None:
                         process.wait()
                 else:
-                    self.ShowTipDialog("未设置资源链接，SVN无法更新资源...")
+                    self.ShowTipDialog("错误", "未设置资源链接，SVN无法更新资源...")
                 os.chdir(originalPath)
             else:
-                self.ShowTipDialog("错误","SVN目录不存在，请重新设置")
+                self.ShowTipDialog("错误", "SVN目录不存在，请重新设置")
         else:
-            self.ShowTipDialog("错误","项目目录不存在，请重新设置")
+            self.ShowTipDialog("错误", "项目目录不存在，请重新设置")
 
     def UpdateGitBranch(self):
         config = LoadJsonData()
         if "ProPath" in config and os.path.exists(config["ProPath"]):
             proPath = config["ProPath"]
             originalPath = os.getcwd()
-            self.logDialog = LogDialog(self)
+            self.logDialog = LogWidget(self)
             self.logDialog.show()
             os.chdir(proPath)
             process = self.UpdateGit()
             if process.returncode == 0:
                 self.ShowTipDialog("成功", "GIT更新成功！")
             else:
-                self.ShowTipDialog("错误", "GIT更新失败！")
+                error = process.stdout.read() or process.stderr.read()
+                self.ShowTipDialog("错误", f"GIT更新失败！\n{error}")
             process.wait()
             os.chdir(originalPath)
         else:
@@ -133,7 +180,7 @@ class MainWindow(QWidget, Ui_Form):
             svnPath = config["SvnPath"]
             originalPath = os.getcwd()
             os.chdir(svnPath)
-            self.logDialog = LogDialog(self)
+            self.logDialog = LogWidget(self)
             self.logDialog.show()
             if self.ResLink.text() != UnKnowDes:
                 os.chdir(os.path.join(svnPath, self.ResLink.text()))
@@ -141,7 +188,8 @@ class MainWindow(QWidget, Ui_Form):
                 if isSuc:
                     self.ShowTipDialog("成功", "SVN更新成功！")
                 else:
-                    self.ShowTipDialog("错误", "SVN更新失败！")
+                    error = process.stdout.read() or process.stderr.read()
+                    self.ShowTipDialog("错误", f"SVN更新失败！\n{error}")
                 if process is not None:
                     process.wait()
             else:
@@ -149,6 +197,10 @@ class MainWindow(QWidget, Ui_Form):
             os.chdir(originalPath)
         else:
             self.ShowTipDialog("错误","SVN目录不存在，请重新设置")
+
+    def ConfigBtnClicked(self):
+        self.AppConfigTip = ConfigAppWidget(self)
+        self.AppConfigTip.show()
 
     def ResDevBtnClicked(self):
         self.SwitchResLink("dev")
@@ -160,7 +212,7 @@ class MainWindow(QWidget, Ui_Form):
         self.SwitchResLink("release")
 
     def SwitchResLink(self, resLinkName):
-        self.logDialog = LogDialog(self)
+        self.logDialog = LogWidget(self)
         self.logDialog.show()
         self.logDialog.logText.clear()
         self.logDialog.append("开始切换资源链接...")
@@ -338,8 +390,16 @@ class MainWindow(QWidget, Ui_Form):
                 return None
 
     def GuideTabelBtnClicked(self):
-        proPathDes = self.ProPath.text()
-        self.BatProcess("导入表格", os.path.join(proPathDes, "client", "tables", "build.bat"))
+        config = LoadJsonData()
+        if "ProPath" in config and os.path.exists(config["ProPath"]):
+            path = os.path.join(config["ProPath"], "client", "tables")
+            originalPath = os.getcwd()
+            os.chdir(path)
+            exePath = os.path.join(path, "build.bat")
+            subprocess.Popen(exePath)
+            os.chdir(originalPath)
+        else:
+            self.ShowTipDialog("错误", "项目目录不存在，请重新设置")
 
     def GuideProtobufBtnClicked(self):
         proPathDes = self.ProPath.text()
@@ -349,7 +409,7 @@ class MainWindow(QWidget, Ui_Form):
         originalPath = os.getcwd()
         proPath = os.path.dirname(batPath)
         os.chdir(proPath)
-        self.logDialog = LogDialog(self)
+        self.logDialog = LogWidget(self)
         self.logDialog.show()
         self.logDialog.logText.clear()
         self.logDialog.append("开始" + name)
