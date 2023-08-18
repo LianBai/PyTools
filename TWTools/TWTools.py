@@ -2,10 +2,9 @@ import ctypes
 import os
 import sys
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 
-from MainWindow import MainWindow, TipWidget
+from MainWindow import MainWindow
 from JsonUtil import LoadJsonData
 
 
@@ -20,8 +19,6 @@ if __name__ == '__main__':
             main.RefreshSvnPath()
         else:
             main.ProPathSearchBtnClicked()
-        if "SvnExePath" in config and os.path.exists(config["SvnExePath"]):
-            main.SvnExePath.setText(config["SvnExePath"])
         main.RefreshResLink()
         main.show()
         app.focusChanged.connect(main.RefreshBranch)

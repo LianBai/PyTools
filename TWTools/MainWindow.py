@@ -1,8 +1,10 @@
-import ctypes
 import io
 import os
 import subprocess
 import sys
+import requests
+import json
+import psutil
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QTextCursor, QFontMetrics
@@ -16,6 +18,7 @@ from JsonUtil import SaveJsonData, LoadJsonData
 from TipWidget_ui import Ui_TipWidget
 from LogWidget_ui import Ui_LogWidget
 from AppConfig_ui import Ui_AppConfig
+from AppUtil import AutoLabelFontSize
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
@@ -103,7 +106,6 @@ class MainWindow(QWidget, Ui_Form):
         self.ResReleaseBtn.clicked.connect(self.ResReleaseBtnClicked)
         self.ProPathSearchBtn.clicked.connect(self.ProPathSearchBtnClicked)
         self.SvnPathSearchBtn.clicked.connect(self.SvnPathSearchBtnClicked)
-        self.SvnExeSearchBtn.clicked.connect(self.SvnExeSearchBtnClicked)
         self.GuideTabelBtn.clicked.connect(self.GuideTabelBtnClicked)
         self.SvnCommitBtn.clicked.connect(self.SvnCommitBtnClicked)
         self.GuideProtobufBtn.clicked.connect(self.GuideProtobufBtnClicked)
@@ -119,6 +121,7 @@ class MainWindow(QWidget, Ui_Form):
         self.ExcelOpenServerBtn.clicked.connect(self.ExcelOpenServerBtnClicked)
         self.CloseServerBtn.clicked.connect(self.CloseServerBtnClicked)
         self.OpenProtobufPathBtn.clicked.connect(self.OpenProtobufPathBtnClicked)
+        self.HubOpenPro.clicked.connect(self.HubOpenProBtnClicked)
 
     def OnWindowActivate(self, hwnd, msg, wparam, lparam):
         self.RefreshGitBranch()
@@ -333,17 +336,6 @@ class MainWindow(QWidget, Ui_Form):
             self.ProPath.setText(folder_path)
             config["SvnPath"] = folder_path
             self.RefreshSvnPath()
-            SaveJsonData(config)
-
-    def SvnExeSearchBtnClicked(self):
-        config = LoadJsonData()
-        self.dialog = QFileDialog(self, "选择TortoiseProc.exe软件", "./")
-        self.dialog.setFileMode(QFileDialog.ExistingFile)
-        self.dialog.setNameFilter("Executable files (TortoiseProc.exe)")
-        if self.dialog.exec() == QDialog.Accepted:
-            file_path = self.dialog.selectedFiles()[0]
-            self.SvnExePath.setText(file_path)
-            config["SvnExePath"] = file_path
             SaveJsonData(config)
 
     def RefreshSvnPath(self):
@@ -574,10 +566,77 @@ class MainWindow(QWidget, Ui_Form):
         path = os.path.join(config["ProPath"], "client", "netmsg", "protobuf")
         OpenPath(path, self)
 
+    def HubOpenProBtnClicked(self):
+        config = LoadJsonData()
+        if "ProPath" in config and os.path.exists(config["ProPath"]):
+            clientPath = os.path.join(config["ProPath"], "client", "client")
+            if "HubExePath" in config and os.path.exists(config["HubExePath"]):
+                hub_path = config["HubExePath"]
+                self.OpenHubPro(clientPath)
+            else:
+                self.ShowTipDialog("错误", "请先设置Unity Hub.exe路径！")
+        else:
+            self.ShowTipDialog("错误", "项目目录不存在，请重新设置")
+
+    def OpenHubPro(self, proPath):
+        hubPort = 0
+        # 查找 Unity Hub 进程
+        for proc in psutil.process_iter(['pid', 'name']):
+            if proc.info['name'] == 'Unity Hub.exe':
+                # 获取 Unity Hub 进程的详细信息
+                proc_info = proc.as_dict(attrs=['pid', 'connections'])
+                # 查找正在使用的端口号
+                for conn in proc_info['connections']:
+                    if conn.status == 'LISTEN':
+                        hubPort = conn.laddr.port
+        if hubPort == 0:
+            self.OpenUnityHub()
+            return
+
+        # Unity Hub REST API 的基本 URL
+        hub_api_url = f"http://localhost:{hubPort}/api/v1"
+        # 规范化路径，消除路径格式的差异
+        proPath = os.path.normcase(proPath)
+        # 获取 Unity Hub 中的所有项目
+        try:
+            response = requests.get(f"{hub_api_url}/projects")
+            response.raise_for_status()
+            projects = json.loads(response.content)
+        except requests.exceptions.RequestException as e:
+            self.ShowTipDialog("错误", f"无法获取 Unity Hub 中的项目：{e}")
+            self.OpenUnityHub()
+            return
+        # 找到要打开的项目
+        project = next((p for p in projects if os.path.normcase(p["path"]) == proPath), None)
+        if project:
+            # 打开项目
+            try:
+                response = requests.post(f"{hub_api_url}/projects/{project['id']}/open")
+                response.raise_for_status()
+                self.ShowTipDialog("成功", f"成功打开项目 {project['name']}")
+            except requests.exceptions.RequestException as e:
+                self.ShowTipDialog("错误", f"无法打开项目 {project['name']}：{e}")
+                self.OpenUnityHub()
+        else:
+            self.OpenUnityHub()
+
+    def OpenUnityHub(self):
+        # 如果 Unity Hub 中不存在要打开的项目，则尝试启动 Unity Hub 进程并打开指定的项目
+        config = LoadJsonData()
+        if "HubExePath" in config and os.path.exists(config["HubExePath"]):
+            hub_path = config["HubExePath"]
+            try:
+                subprocess.Popen([hub_path])
+            except Exception as e:
+                self.ShowTipDialog("错误", f"无法启动 Unity Hub 进程：{e}")
+        else:
+            self.ShowTipDialog("错误", "请先设置Unity Hub.exe路径！")
+
     def ShowTipDialog(self, title, content):
         self.dialog = TipWidget(self)
         self.dialog.show()
         self.dialog.label.setText(content)
+        AutoLabelFontSize(self.dialog.label)
         self.dialog.setWindowTitle(title)
 
     def RefreshGitBranch(self):
@@ -592,32 +651,8 @@ class MainWindow(QWidget, Ui_Form):
             self.GitLink.setText(result[result.rfind("/")+1:])
         else:
             self.GitLink.setText(UnKnowDes)
-        self.AutoLabelFontSize(self.GitLink)
+        AutoLabelFontSize(self.GitLink)
         os.chdir(original)
-
-    @staticmethod
-    def AutoLabelFontSize(label):
-        # 创建一个QFont对象
-        font = label.font()
-        # 计算字体大小的范围
-        fm = QFontMetrics(font)
-        min_size = 1
-        max_size = 20
-        # 二分查找适应的字体大小
-        low, high = min_size, max_size
-        while low <= high:
-            mid = (low + high) // 2
-            font.setPointSize(mid)
-            fm = QFontMetrics(font)
-            rect = fm.boundingRect(label.text())
-            if rect.width() <= label.width():
-                low = mid + 1
-            else:
-                high = mid - 1
-
-        # 设置QLabel的字体
-        font.setPointSize(high)
-        label.setFont(font)
 
     def RefreshGitSwitch(self):
         config = LoadJsonData()
