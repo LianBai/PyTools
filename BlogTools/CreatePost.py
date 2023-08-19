@@ -93,7 +93,9 @@ class CreatePostsDialog(QDialog, Ui_CreatePostsForm):
                 f.write(f'tags: {self.PostsTagLineEdit.text()}\n')
                 f.write(f'date: {str(timestamp)}\n')
                 f.write('---\n\n')
-            ShowTipDialog("创建成功", "成功", self)
+            # ShowTipDialog("创建成功", "成功", self)
+            # 使用 Windows 默认的打开方式打开 Excel 表格
+            os.startfile(os.path.join(postPath, filename))
             OpenPath(postPath, self)
         except Exception as e:
             ShowTipDialog(f"创建失败:{e}", "错误", self)

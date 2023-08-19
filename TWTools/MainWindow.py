@@ -6,8 +6,10 @@ import requests
 import json
 import psutil
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QDialog, QWidget, QFileDialog, QTextEdit, QApplication
+from PyQt5.QtWidgets import QDialog, QWidget, QFileDialog, QTextEdit, QApplication, QPushButton, QMenu, QAction, \
+    QMainWindow, QHBoxLayout, QButtonGroup
 from watchdog.observers import Observer
 
 from FileUtil import OpenPath, MakeLink
@@ -22,7 +24,7 @@ sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 UnKnowDes = "未知"
 
 
-class MainWindow(QWidget, Ui_Form):
+class MainWindow(QMainWindow, Ui_Form):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.AppConfigTip = None
@@ -59,9 +61,15 @@ class MainWindow(QWidget, Ui_Form):
         self.CloseServerBtn.clicked.connect(self.CloseServerBtnClicked)
         self.OpenProtobufPathBtn.clicked.connect(self.OpenProtobufPathBtnClicked)
         self.HubOpenPro.clicked.connect(self.HubOpenProBtnClicked)
+        self.menubar = self.menuBar()
+        self.AddMenu("基础")
+        self.AddMenu("服务")
+        self.AddMenu("配置")
 
-    def OnWindowActivate(self, hwnd, msg, wparam, lparam):
-        self.RefreshGitBranch()
+    def AddMenu(self, name, func=None):
+        action1 = QAction(name, self)
+        # action1.triggered.connect(func)
+        self.menubar.addAction(action1)
 
     def UpdateBtnClicked(self):
         config = LoadJsonData()
@@ -605,6 +613,3 @@ class MainWindow(QWidget, Ui_Form):
     def RefreshBranch(self):
         self.RefreshGitBranch()
         self.RefreshResLink()
-
-
-
