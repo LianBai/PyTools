@@ -14,7 +14,7 @@ from FileUtil import OpenPath, MakeLink
 from GitBranchHandler import GitBranchHandler
 from roommain_ui import Ui_Form
 from JsonUtil import SaveJsonData, LoadJsonData
-from AppUtil import AutoLabelFontSize, LogWidget, TipWidget, ConfigAppWidget
+from AppUtil import AutoMultipleLabelFontSize, LogWidget, TipWidget, ConfigAppWidget
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
@@ -573,7 +573,7 @@ class MainWindow(QWidget, Ui_Form):
         self.dialog = TipWidget(self)
         self.dialog.show()
         self.dialog.label.setText(content)
-        AutoLabelFontSize(self.dialog.label)
+        AutoMultipleLabelFontSize(self.dialog.label)
         self.dialog.setWindowTitle(title)
 
     def RefreshGitBranch(self):
@@ -588,7 +588,7 @@ class MainWindow(QWidget, Ui_Form):
             self.GitLink.setText(result[result.rfind("/")+1:])
         else:
             self.GitLink.setText(UnKnowDes)
-        AutoLabelFontSize(self.GitLink)
+        AutoMultipleLabelFontSize(self.GitLink)
         os.chdir(original)
 
     def RefreshGitSwitch(self):
