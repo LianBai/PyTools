@@ -5,10 +5,10 @@ def DeleteDir(dirPath, logWidget):
     logWidget.append(f"取消软链目录: {dirPath}")
     if os.path.exists(dirPath):
         if not os.path.islink(dirPath):
-            logWidget.append(f"存在无法识别的软链目录：{dirPath}", True)
+            logWidget.append(f"存在无法识别的软链目录：{dirPath}")
         os.unlink(dirPath)  # 删除符号链接文件
         if os.path.exists(dirPath):
-            logWidget.append(f"删除软链目录：{dirPath}", True)
+            logWidget.append(f"删除软链目录：{dirPath}")
             os.rmdir(dirPath)
 
 
@@ -18,7 +18,7 @@ def MakeLink(source, destination, logWidget):
     if not os.path.exists(destination):
         os.symlink(source, destination, target_is_directory=True)
     else:
-        logWidget.append(f"git已存在相同的svn目录：{destination} {os.path.islink(destination)}", True)
+        logWidget.append(f"git已存在相同的svn目录：{destination} {os.path.islink(destination)}")
 
 
 def OpenPath(path, widget):

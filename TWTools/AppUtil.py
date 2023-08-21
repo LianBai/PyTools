@@ -106,12 +106,10 @@ class LogWidget(QDialog, Ui_LogWidget):
         self.setWindowIcon(QIcon("TWTools.ico"))
         self.setupUi(self)
 
-    def append(self, msg, is_red=False):
+    def append(self, msg):
         # 向日志窗口添加消息
         self.logText.appendPlainText(msg)
         self.logText.moveCursor(QTextCursor.End)
-        if is_red:
-            self.logText.setTextColor(Qt.red)
         self.logText.moveCursor(QTextCursor.End)
 
 
