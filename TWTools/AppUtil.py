@@ -4,7 +4,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFontMetrics, QIcon, QTextCursor
 from PyQt5.QtWidgets import QDialog, QFileDialog
 
-from AppConfig_ui import Ui_AppConfig
 from JsonUtil import LoadJsonData, SaveJsonData
 from LogWidget_ui import Ui_LogWidget
 from TipWidget_ui import Ui_TipWidget
@@ -111,43 +110,6 @@ class LogWidget(QDialog, Ui_LogWidget):
         self.logText.appendPlainText(msg)
         self.logText.moveCursor(QTextCursor.End)
         self.logText.moveCursor(QTextCursor.End)
-
-
-class ConfigAppWidget(QDialog, Ui_AppConfig):
-    def __init__(self, parent=None):
-        super(ConfigAppWidget, self).__init__(parent)
-        self.dialog = None
-        self.setWindowIcon(QIcon("TWTools.ico"))
-        self.setupUi(self)
-        config = LoadJsonData()
-        if "SvnExePath" in config and os.path.exists(config["SvnExePath"]):
-            self.SvnExePath.setText(config["SvnExePath"])
-        if "HubExePath" in config and os.path.exists(config["HubExePath"]):
-            self.HubPath.setText(config["HubExePath"])
-        self.SvnExeSearchBtn.clicked.connect(self.SvnExeSearchBtnClicked)
-        self.HubPathSearchBtn.clicked.connect(self.HubSearchBtnClicked)
-
-    def SvnExeSearchBtnClicked(self):
-        config = LoadJsonData()
-        self.dialog = QFileDialog(self, "选择TortoiseProc.exe软件", "./")
-        self.dialog.setFileMode(QFileDialog.ExistingFile)
-        self.dialog.setNameFilter("Executable files (TortoiseProc.exe)")
-        if self.dialog.exec() == QDialog.Accepted:
-            file_path = self.dialog.selectedFiles()[0]
-            self.SvnExePath.setText(file_path)
-            config["SvnExePath"] = file_path
-            SaveJsonData(config)
-
-    def HubSearchBtnClicked(self):
-        config = LoadJsonData()
-        self.dialog = QFileDialog(self, "选择Unity Hub.exe软件", "./")
-        self.dialog.setFileMode(QFileDialog.ExistingFile)
-        self.dialog.setNameFilter("Executable files (*.exe)")
-        if self.dialog.exec() == QDialog.Accepted:
-            file_path = self.dialog.selectedFiles()[0]
-            self.HubPath.setText(file_path)
-            config["HubExePath"] = file_path
-            SaveJsonData(config)
 
 
 def ShowTipDialog(title, content, parent=None):

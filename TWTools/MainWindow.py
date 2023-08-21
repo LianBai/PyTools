@@ -15,7 +15,7 @@ from FileUtil import OpenPath, MakeLink
 from GitBranchHandler import GitBranchHandler
 from roommain_ui import Ui_Form
 from JsonUtil import SaveJsonData, LoadJsonData
-from AppUtil import AutoMultipleLabelFontSize, LogWidget, TipWidget, ConfigAppWidget, HideLayout, ShowLayout, \
+from AppUtil import AutoMultipleLabelFontSize, LogWidget, TipWidget, HideLayout, ShowLayout, \
     ShowTipDialog, GetLayoutHeight, UpdateLayoutHeight
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
@@ -40,7 +40,6 @@ class MainWindow(QMainWindow, Ui_Form):
         self.UpdateBtn.clicked.connect(self.UpdateBtnClicked)
         self.GitUpdateBtn.clicked.connect(self.UpdateGitBranch)
         self.SvnUpdateBtn.clicked.connect(self.UpdateSvnBranch)
-        self.ConfigBtn.clicked.connect(self.ConfigBtnClicked)
         self.ResDevBtn.clicked.connect(self.ResDevBtnClicked)
         self.ResTrunkBtn.clicked.connect(self.ResTruckBtnClicked)
         self.ResReleaseBtn.clicked.connect(self.ResReleaseBtnClicked)
@@ -516,10 +515,6 @@ class MainWindow(QMainWindow, Ui_Form):
                 ShowTipDialog("错误", "SVN目录不存在，请重新设置", self)
         else:
             ShowTipDialog("错误", "项目目录不存在，请重新设置", self)
-
-    def ConfigBtnClicked(self):
-        self.AppConfigTip = ConfigAppWidget(self)
-        self.AppConfigTip.show()
 
     def ResDevBtnClicked(self):
         self.SwitchResLink("dev")
