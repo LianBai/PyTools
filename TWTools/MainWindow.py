@@ -6,16 +6,17 @@ import requests
 import json
 import psutil
 
-from PyQt5 import QtCore
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QAction, QMainWindow
+from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QAction, QMainWindow, QVBoxLayout, \
+    QSpacerItem, QSizePolicy
 from watchdog.observers import Observer
 
 from FileUtil import OpenPath, MakeLink
 from GitBranchHandler import GitBranchHandler
 from roommain_ui import Ui_Form
 from JsonUtil import SaveJsonData, LoadJsonData
-from AppUtil import AutoMultipleLabelFontSize, LogWidget, TipWidget, ConfigAppWidget, HideLayout, ShowLayout, ShowTipDialog
+from AppUtil import AutoMultipleLabelFontSize, LogWidget, TipWidget, ConfigAppWidget, HideLayout, ShowLayout, \
+    ShowTipDialog, GetLayoutHeight, UpdateLayoutHeight
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
@@ -64,10 +65,10 @@ class MainWindow(QMainWindow, Ui_Form):
         self.SvnExeSearchBtn.clicked.connect(self.SvnExeSearchBtnClicked)
         self.HubPathSearchBtn.clicked.connect(self.HubSearchBtnClicked)
         # endregion
-        # self.menubar = self.menuBar()
-        # self.AddMenu("基础", self.RefreshBasicMenu)
-        # self.AddMenu("服务", self.RefreshBasicMenu)
-        # self.AddMenu("配置", self.RefreshConfigMenu)
+        self.menubar = self.menuBar()
+        self.AddMenu("基础", self.RefreshBasicMenu)
+        self.AddMenu("服务", self.RefreshBasicMenu)
+        self.AddMenu("配置", self.RefreshConfigMenu)
 
     def InitShow(self):
         config = LoadJsonData()
@@ -75,38 +76,42 @@ class MainWindow(QMainWindow, Ui_Form):
             self.SvnExePath.setText(config["SvnExePath"])
         if "HubExePath" in config and os.path.exists(config["HubExePath"]):
             self.HubPath.setText(config["HubExePath"])
-        # self.infoHeight = self.InfoLayout.geometry().height()
-        # self.btnHeight = self.BtnLayout.geometry().height()
-        # self.confHeight = self.ConfigLayout.geometry().height()
-        # self.RefreshBasicMenu()
+        try:
+            self.RefreshBasicMenu()
+        except Exception as e:
+            ShowTipDialog("错误", f"初始化失败！\n{e}", self)
 
     def show(self):
         super().show()
         self.InitShow()
 
-    # def AddMenu(self, name, func=None):
-    #     action1 = QAction(name, self)
-    #     action1.triggered.connect(func)
-    #     self.menubar.addAction(action1)
+    def AddMenu(self, name, func=None):
+        action1 = QAction(name, self)
+        action1.triggered.connect(func)
+        self.menubar.addAction(action1)
 
-    # def RefreshBasicMenu(self):
-    #     height = self.infoHeight + self.btnHeight + 10
-    #     HideLayout(self.ConfigLayout)
-    #     ShowLayout(self.InfoLayout)
-    #     ShowLayout(self.BtnLayout)
-    #     self.resize(384, height)
-    #
-    #     self.update()
-    #
-    # def RefreshConfigMenu(self):
-    #     height = self.confHeight + 10
-    #     HideLayout(self.InfoLayout)
-    #     HideLayout(self.BtnLayout)
-    #     ShowLayout(self.ConfigLayout)
-    #     self.resize(384, height)
-    #     self.update()
-    #     self.splitter.update()
-    #     self.update()
+    def RefreshBasicMenu(self):
+        height = 40
+        ShowLayout(self.InfoLayout)
+        ShowLayout(self.BtnLayout)
+        HideLayout(self.ConfigLayout)
+        height += GetLayoutHeight(self.InfoLayout)
+        height += GetLayoutHeight(self.BtnLayout)
+        self.setMinimumSize(self.width(), height)
+        self.setMaximumSize(self.width(), height)
+        self.resize(self.width(), height)
+        self.update()
+
+    def RefreshConfigMenu(self):
+        height = 40
+        HideLayout(self.InfoLayout)
+        HideLayout(self.BtnLayout)
+        ShowLayout(self.ConfigLayout)
+        height += GetLayoutHeight(self.ConfigLayout)
+        self.setMinimumSize(self.width(), height)
+        self.setMaximumSize(self.width(), height)
+        self.resize(self.width(), height)
+        self.update()
 
     def UpdateGitBranch(self):
         config = LoadJsonData()

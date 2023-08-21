@@ -58,6 +58,10 @@ def AutoSingleLabelFontSize(label):
     label.setFont(font)
 
 
+def GetLayoutHeight(layout):
+    return layout.sizeHint().height()
+
+
 def HideLayout(layout):
     # 获取布局中的所有组件，并隐藏它们
     for i in range(layout.count()):
@@ -66,7 +70,6 @@ def HideLayout(layout):
             widget.hide()
 
     # 禁用布局
-    layout.setEnabled(False)
     layout.update()
 
 
@@ -79,6 +82,14 @@ def ShowLayout(layout):
 
     # 禁用布局
     layout.setEnabled(True)
+    layout.update()
+    return GetLayoutHeight(layout)
+
+
+def UpdateLayoutHeight(layout, height):
+    rect = layout.geometry()
+    rect.setHeight(height)
+    layout.setGeometry(rect)
     layout.update()
 
 
