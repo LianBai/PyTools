@@ -58,6 +58,30 @@ def AutoSingleLabelFontSize(label):
     label.setFont(font)
 
 
+def HideLayout(layout):
+    # 获取布局中的所有组件，并隐藏它们
+    for i in range(layout.count()):
+        widget = layout.itemAt(i).widget()
+        if widget:
+            widget.hide()
+
+    # 禁用布局
+    layout.setEnabled(False)
+    layout.update()
+
+
+def ShowLayout(layout):
+    # 获取布局中的所有组件，并隐藏它们
+    for i in range(layout.count()):
+        widget = layout.itemAt(i).widget()
+        if widget:
+            widget.show()
+
+    # 禁用布局
+    layout.setEnabled(True)
+    layout.update()
+
+
 class TipWidget(QDialog, Ui_TipWidget):
     def __init__(self, parent=None):
         super(TipWidget, self).__init__(parent)
@@ -115,3 +139,11 @@ class ConfigAppWidget(QDialog, Ui_AppConfig):
             self.HubPath.setText(file_path)
             config["HubExePath"] = file_path
             SaveJsonData(config)
+
+
+def ShowTipDialog(title, content, parent=None):
+    dialog = TipWidget(parent)
+    dialog.show()
+    dialog.label.setText(content)
+    AutoMultipleLabelFontSize(dialog.label)
+    dialog.setWindowTitle(title)
