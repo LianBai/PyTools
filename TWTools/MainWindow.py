@@ -63,11 +63,14 @@ class MainWindow(QMainWindow, Ui_Form):
         self.HubOpenPro.clicked.connect(self.HubOpenProBtnClicked)
         self.SvnExeSearchBtn.clicked.connect(self.SvnExeSearchBtnClicked)
         self.HubPathSearchBtn.clicked.connect(self.HubSearchBtnClicked)
+        self.GroupLayout = [self.InfoLayout, self.BtnLayout, self.ResBtnLayout, self.ServerBtnLayout, self.ConfigLayout,
+                            self.ExcelSearhLayout]
         # endregion
         self.menubar = self.menuBar()
         self.AddMenu("基础", self.RefreshBasicMenu)
-        self.AddMenu("服务", self.RefreshBasicMenu)
+        self.AddMenu("服务", self.RefreshServerMenu)
         self.AddMenu("配置", self.RefreshConfigMenu)
+        self.AddMenu("表格", self.RefreshConfigMenu)
 
     def InitShow(self):
         config = LoadJsonData()
@@ -90,12 +93,17 @@ class MainWindow(QMainWindow, Ui_Form):
         self.menubar.addAction(action1)
 
     def RefreshBasicMenu(self):
-        height = 40
-        ShowLayout(self.InfoLayout)
-        ShowLayout(self.BtnLayout)
-        HideLayout(self.ConfigLayout)
-        height += GetLayoutHeight(self.InfoLayout)
-        height += GetLayoutHeight(self.BtnLayout)
+        height = 50
+        height += self.RefreshLayoutGroup([self.InfoLayout, self.BtnLayout, self.ResBtnLayout])
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.setMinimumSize(self.width(), height)
+        self.setMaximumSize(self.width(), height)
+        self.resize(self.width(), height)
+        self.update()
+
+    def RefreshServerMenu(self):
+        height = 50
+        height += self.RefreshLayoutGroup([self.InfoLayout, self.ServerBtnLayout])
         self.setMinimumSize(self.width(), height)
         self.setMaximumSize(self.width(), height)
         self.resize(self.width(), height)
@@ -103,14 +111,20 @@ class MainWindow(QMainWindow, Ui_Form):
 
     def RefreshConfigMenu(self):
         height = 40
-        HideLayout(self.InfoLayout)
-        HideLayout(self.BtnLayout)
-        ShowLayout(self.ConfigLayout)
-        height += GetLayoutHeight(self.ConfigLayout)
+        height += self.RefreshLayoutGroup([self.ConfigLayout])
         self.setMinimumSize(self.width(), height)
         self.setMaximumSize(self.width(), height)
         self.resize(self.width(), height)
         self.update()
+
+    def RefreshLayoutGroup(self, showLayout):
+        height = 0
+        for item in self.GroupLayout:
+            if item in showLayout:
+                height += ShowLayout(item)
+            else:
+                HideLayout(item)
+        return height
 
     def UpdateGitBranch(self):
         config = LoadJsonData()
