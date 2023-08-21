@@ -1,3 +1,4 @@
+import glob
 import io
 import os
 import subprocess
@@ -8,7 +9,7 @@ import psutil
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QAction, QMainWindow, QVBoxLayout, \
-    QSpacerItem, QSizePolicy
+    QSpacerItem, QSizePolicy, QPushButton
 from watchdog.observers import Observer
 
 from FileUtil import OpenPath, MakeLink
@@ -63,14 +64,16 @@ class MainWindow(QMainWindow, Ui_Form):
         self.HubOpenPro.clicked.connect(self.HubOpenProBtnClicked)
         self.SvnExeSearchBtn.clicked.connect(self.SvnExeSearchBtnClicked)
         self.HubPathSearchBtn.clicked.connect(self.HubSearchBtnClicked)
+        self.ExcelSearchInPut.textChanged.connect(self.ExcelSearchInPutChanged)
+        # endregion
         self.GroupLayout = [self.InfoLayout, self.BtnLayout, self.ResBtnLayout, self.ServerBtnLayout, self.ConfigLayout,
                             self.ExcelSearhLayout]
-        # endregion
+        self.TabelDic = []
         self.menubar = self.menuBar()
         self.AddMenu("基础", self.RefreshBasicMenu)
         self.AddMenu("服务", self.RefreshServerMenu)
         self.AddMenu("配置", self.RefreshConfigMenu)
-        self.AddMenu("表格", self.RefreshConfigMenu)
+        self.AddMenu("表格", self.RefreshTableMenu)
 
     def InitShow(self):
         config = LoadJsonData()
@@ -117,6 +120,15 @@ class MainWindow(QMainWindow, Ui_Form):
         self.resize(self.width(), height)
         self.update()
 
+    def RefreshTableMenu(self):
+        height = 40
+        height += self.RefreshLayoutGroup([self.ExcelSearhLayout])
+        self.setMinimumSize(self.width(), height)
+        self.setMaximumSize(self.width(), height)
+        self.resize(self.width(), height)
+        self.update()
+        self.InitTable()
+
     def RefreshLayoutGroup(self, showLayout):
         height = 0
         for item in self.GroupLayout:
@@ -125,6 +137,40 @@ class MainWindow(QMainWindow, Ui_Form):
             else:
                 HideLayout(item)
         return height
+
+    def InitTable(self):
+        for key, value in self.TabelDic:
+            value.close()
+        self.TabelDic.clear()
+        self.ExcelSearchInPut.clear()
+        if "ProPath" in LoadJsonData() and os.path.exists(LoadJsonData()["ProPath"]):
+            excelPath = glob.glob(os.path.join(LoadJsonData()["ProPath"], "client", "tables", "excel", "*.xlsx"))
+            for item in excelPath:
+                self.AddExcelBtn(item)
+        else:
+            ShowTipDialog("错误", "请先设置项目路径！", self)
+        self.update()
+
+    def RefreshTabelShow(self):
+        # 获取 QPlainTextEdit 中的文字
+        text = self.ExcelSearchInPut.toPlainText()
+
+        if text == "":
+            for key, value in self.TabelDic:
+                value.show()
+        else:
+            for key, value in self.TabelDic:
+                if text.lower() in key.lower():
+                    value.show()
+                else:
+                    value.hide()
+
+    def AddExcelBtn(self, path):
+        btn = QPushButton()
+        btn.setText(os.path.basename(path))
+        btn.clicked.connect(lambda:  os.startfile(path))
+        self.ExcelScrollLayout.addWidget(btn)
+        self.TabelDic.append((path, btn))
 
     def UpdateGitBranch(self):
         config = LoadJsonData()
@@ -684,5 +730,8 @@ class MainWindow(QMainWindow, Ui_Form):
             config["SvnPath"] = folder_path
             self.RefreshSvnPath()
             SaveJsonData(config)
+
+    def ExcelSearchInPutChanged(self):
+        self.RefreshTabelShow()
 
     # endregion
