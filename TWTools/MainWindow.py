@@ -139,10 +139,15 @@ class MainWindow(QMainWindow, Ui_Form):
         return height
 
     def InitTable(self):
+        if self.TabelDic is None or len(self.TabelDic) == 0:
+            self.ForeRefreshTable()
+        self.ExcelSearchInPut.clear()
+
+    def ForeRefreshTable(self):
         for key, value in self.TabelDic:
             value.close()
         self.TabelDic.clear()
-        self.ExcelSearchInPut.clear()
+
         if "ProPath" in LoadJsonData() and os.path.exists(LoadJsonData()["ProPath"]):
             excelPath = glob.glob(os.path.join(LoadJsonData()["ProPath"], "client", "tables", "excel", "*.xlsx"))
             for item in excelPath:
