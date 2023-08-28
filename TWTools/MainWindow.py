@@ -8,8 +8,7 @@ import json
 import psutil
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QDialog, QFileDialog, QTextEdit, QApplication, QAction, QMainWindow, QVBoxLayout, \
-    QSpacerItem, QSizePolicy, QPushButton
+from PyQt5.QtWidgets import QDialog, QFileDialog, QApplication, QAction, QMainWindow, QPushButton
 from watchdog.observers import Observer
 
 from FileUtil import OpenPath, MakeLink
@@ -17,7 +16,7 @@ from GitBranchHandler import GitBranchHandler
 from roommain_ui import Ui_Form
 from JsonUtil import SaveJsonData, LoadJsonData
 from AppUtil import AutoMultipleLabelFontSize, LogWidget, TipWidget, HideLayout, ShowLayout, \
-    ShowTipDialog, GetLayoutHeight, UpdateLayoutHeight
+    ShowTipDialog
 
 sys.stdout = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
 sys.stderr = io.TextIOWrapper(io.BytesIO(), 'utf-8', errors='ignore')
@@ -28,6 +27,7 @@ UnKnowDes = "未知"
 class MainWindow(QMainWindow, Ui_Form):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+        self.app = None
         self.AppConfigTip = None
         self.event_handler = None
         self.observer = None
@@ -41,6 +41,8 @@ class MainWindow(QMainWindow, Ui_Form):
         self.UpdateBtn.clicked.connect(self.UpdateBtnClicked)
         self.GitUpdateBtn.clicked.connect(self.UpdateGitBranch)
         self.SvnUpdateBtn.clicked.connect(self.UpdateSvnBranch)
+        self.OpenSvnResPathBtn.clicked.connect(self.OpenSvnPathBtnClicked)
+        self.OpenProMainPathBtn.clicked.connect(self.OpenProPathBtnClicked)
         self.ResDevBtn.clicked.connect(self.ResDevBtnClicked)
         self.ResTrunkBtn.clicked.connect(self.ResTruckBtnClicked)
         self.ResReleaseBtn.clicked.connect(self.ResReleaseBtnClicked)
@@ -62,9 +64,12 @@ class MainWindow(QMainWindow, Ui_Form):
         self.CloseServerBtn.clicked.connect(self.CloseServerBtnClicked)
         self.OpenProtobufPathBtn.clicked.connect(self.OpenProtobufPathBtnClicked)
         self.HubOpenPro.clicked.connect(self.HubOpenProBtnClicked)
+        self.HubPathBtn.clicked.connect(self.HubPathBtnClicked)
         self.SvnExeSearchBtn.clicked.connect(self.SvnExeSearchBtnClicked)
+        self.SvnExePathBtn.clicked.connect(self.SvnExePathBtnClicked)
         self.HubPathSearchBtn.clicked.connect(self.HubSearchBtnClicked)
         self.ExcelSearchInPut.textChanged.connect(self.ExcelSearchInPutChanged)
+        self.RefreshTableBtn.clicked.connect(self.ForeRefreshTable)
         # endregion
         self.GroupLayout = [self.InfoLayout, self.BtnLayout, self.ResBtnLayout, self.ServerBtnLayout, self.ConfigLayout,
                             self.ExcelSearhLayout]
@@ -72,8 +77,8 @@ class MainWindow(QMainWindow, Ui_Form):
         self.menubar = self.menuBar()
         self.AddMenu("基础", self.RefreshBasicMenu)
         self.AddMenu("服务", self.RefreshServerMenu)
-        self.AddMenu("配置", self.RefreshConfigMenu)
         self.AddMenu("表格", self.RefreshTableMenu)
+        self.AddMenu("配置", self.RefreshConfigMenu)
 
     def InitShow(self):
         config = LoadJsonData()
@@ -86,9 +91,27 @@ class MainWindow(QMainWindow, Ui_Form):
         except Exception as e:
             ShowTipDialog("错误", f"初始化失败！\n{e}", self)
 
-    def show(self):
+    def show(self, app=None):
+        config = LoadJsonData()
+        if "ProPath" not in config or not os.path.exists(config["ProPath"]):
+            config["ProPath"] = os.getcwd()
+            SaveJsonData(config)
+        self.ProPath.setText(config["ProPath"])
+        self.RefreshBranch()
+        self.RefreshSvnPath()
+        self.RefreshResLink()
+        if self.app is not None:
+            self.app.focusChanged.disconnect(self.RefreshBranch)
+        self.app = app
+        if self.app is not None:
+            self.app.focusChanged.connect(self.RefreshBranch)
         super().show()
         self.InitShow()
+
+    def close(self):
+        if self.app is not None:
+            self.app.focusChanged.disconnect(self.RefreshBranch)
+        super().close()
 
     def AddMenu(self, name, func=None):
         action1 = QAction(name, self)
@@ -105,7 +128,7 @@ class MainWindow(QMainWindow, Ui_Form):
         self.update()
 
     def RefreshServerMenu(self):
-        height = 50
+        height = 44
         height += self.RefreshLayoutGroup([self.InfoLayout, self.ServerBtnLayout])
         self.setMinimumSize(self.width(), height)
         self.setMaximumSize(self.width(), height)
@@ -141,7 +164,8 @@ class MainWindow(QMainWindow, Ui_Form):
     def InitTable(self):
         if self.TabelDic is None or len(self.TabelDic) == 0:
             self.ForeRefreshTable()
-        self.ExcelSearchInPut.clear()
+        else:
+            self.ExcelSearchInPut.clear()
 
     def ForeRefreshTable(self):
         for key, value in self.TabelDic:
@@ -155,6 +179,7 @@ class MainWindow(QMainWindow, Ui_Form):
         else:
             ShowTipDialog("错误", "请先设置项目路径！", self)
         self.update()
+        self.ExcelSearchInPut.clear()
 
     def RefreshTabelShow(self):
         # 获取 QPlainTextEdit 中的文字
@@ -390,24 +415,11 @@ class MainWindow(QMainWindow, Ui_Form):
             svn_path = self.RefreshResLink()
             # 执行TortoiseProc.exe提交命令
             command = f'"{tortoise_path}" /command:commit /path:"{svn_path}" /closeonend:2'
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True,
-                                       stdin=subprocess.PIPE)
-
-            # 获取TortoiseProc.exe提交命令输出
-            stdout, stderr = process.communicate()
-
-            # 判断TortoiseProc.exe提交命令执行结果
-            if process.returncode == 0:
-                # TortoiseProc.exe提交命令执行成功
-                log = QTextEdit()
-                log.append("TortoiseProc.exe commit completed")
-                log.append(stdout.decode())
-            else:
-                # TortoiseProc.exe提交命令执行失败
-                log = QTextEdit()
-                log.append("TortoiseProc.exe commit failed")
-                log.append("Error message:")
-                log.append(stderr.decode())
+            try:
+                subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, stdin=subprocess.PIPE)
+            except Exception as e:
+                ShowTipDialog("错误", f"无法启动 TortoiseProc.exe 进程：{e}", self)
+                return
         else:
             self.SvnExeSearchBtnClicked()
 
@@ -625,6 +637,17 @@ class MainWindow(QMainWindow, Ui_Form):
             config["SvnExePath"] = file_path
             SaveJsonData(config)
 
+    def SvnExePathBtnClicked(self):
+        config = LoadJsonData()
+        if "SvnExePath" in config and os.path.exists(config["SvnExePath"]):
+            tortoise_path = config["SvnExePath"]
+            try:
+                OpenPath(tortoise_path, self)
+            except Exception as e:
+                ShowTipDialog("错误", f"无法启动 TortoiseProc.exe 进程：{e}", self)
+        else:
+            self.SvnExeSearchBtnClicked()
+
     def HubSearchBtnClicked(self):
         config = LoadJsonData()
         self.dialog = QFileDialog(self, "选择Unity Hub.exe软件", "./")
@@ -712,6 +735,17 @@ class MainWindow(QMainWindow, Ui_Form):
                 ShowTipDialog("错误", "请先设置Unity Hub.exe路径！", self)
         else:
             ShowTipDialog("错误", "项目目录不存在，请重新设置", self)
+
+    def HubPathBtnClicked(self):
+        config = LoadJsonData()
+        if "HubExePath" in config and os.path.exists(config["HubExePath"]):
+            hub_path = config["HubExePath"]
+            try:
+                OpenPath(hub_path, self)
+            except Exception as e:
+                ShowTipDialog("错误", f"无法启动 Unity Hub 进程：{e}", self)
+        else:
+            self.HubSearchBtnClicked()
 
     def ProPathSearchBtnClicked(self):
         config = LoadJsonData()

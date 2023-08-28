@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>386</width>
-    <height>880</height>
+    <width>384</width>
+    <height>1056</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,7 +24,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>376</width>
+    <width>384</width>
     <height>480</height>
    </size>
   </property>
@@ -52,10 +52,10 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>11</x>
-     <y>33</y>
-     <width>366</width>
-     <height>821</height>
+     <x>12</x>
+     <y>34</y>
+     <width>370</width>
+     <height>951</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -125,6 +125,9 @@
           <weight>75</weight>
           <bold>true</bold>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(0, 0, 255);</string>
         </property>
         <property name="text">
          <string>DEVDEVDEV</string>
@@ -239,6 +242,9 @@
           <weight>75</weight>
           <bold>true</bold>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(0, 170, 0);</string>
         </property>
         <property name="text">
          <string>DEVDEVDEV</string>
@@ -377,7 +383,7 @@
        </widget>
       </item>
       <item row="3" column="3">
-       <widget class="QPushButton" name="OpenSvnPathBtn_3">
+       <widget class="QPushButton" name="HubPathBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -571,7 +577,7 @@
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QPushButton" name="OpenSvnPathBtn_2">
+       <widget class="QPushButton" name="SvnExePathBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -746,8 +752,14 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetFixedSize</enum>
       </property>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="OpenExcelPathBtn">
+      <property name="horizontalSpacing">
+       <number>1</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>2</number>
+      </property>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="OpenProtobufPathBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -756,87 +768,31 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
          <font>
+          <pointsize>9</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
           <stylestrategy>PreferDefault</stylestrategy>
          </font>
         </property>
         <property name="text">
-         <string>打开表格目录</string>
+         <string>打开Protobuf
+目录</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="SvnCommitBtn">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>110</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <stylestrategy>PreferDefault</stylestrategy>
-         </font>
-        </property>
-        <property name="text">
-         <string>Svn提交</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QPushButton" name="HubOpenPro">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>110</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <stylestrategy>PreferDefault</stylestrategy>
-         </font>
-        </property>
-        <property name="text">
-         <string>启动项目</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
+      <item row="2" column="2">
        <widget class="QPushButton" name="OpenAndroidPath">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -846,14 +802,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -862,41 +818,12 @@
          </font>
         </property>
         <property name="text">
-         <string>打开Android目录</string>
+         <string>打开Android
+目录</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="GuideTabelBtn">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>110</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <stylestrategy>PreferDefault</stylestrategy>
-         </font>
-        </property>
-        <property name="text">
-         <string>导表</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
+      <item row="1" column="3">
        <widget class="QPushButton" name="GuideProtobufBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -906,14 +833,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -926,8 +853,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="OpenProtobufPathBtn">
+      <item row="2" column="0">
+       <widget class="QPushButton" name="OpenExcelPathBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -936,26 +863,146 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
          <font>
-          <pointsize>9</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
           <stylestrategy>PreferDefault</stylestrategy>
          </font>
         </property>
         <property name="text">
-         <string>打开Protobuf目录</string>
+         <string>打开表格
+目录</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="SvnCommitBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <stylestrategy>PreferDefault</stylestrategy>
+         </font>
+        </property>
+        <property name="text">
+         <string>Svn提交</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="GuideTabelBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <stylestrategy>PreferDefault</stylestrategy>
+         </font>
+        </property>
+        <property name="text">
+         <string>导表</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="HubOpenPro">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <stylestrategy>PreferDefault</stylestrategy>
+         </font>
+        </property>
+        <property name="text">
+         <string>启动项目
+(待开发)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="OpenProMainPathBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <stylestrategy>PreferDefault</stylestrategy>
+         </font>
+        </property>
+        <property name="text">
+         <string>打开项目
+目录</string>
         </property>
        </widget>
       </item>
@@ -966,36 +1013,12 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetFixedSize</enum>
       </property>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="ExcelOpenServerBtn">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>110</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <stylestrategy>PreferDefault</stylestrategy>
-         </font>
-        </property>
-        <property name="text">
-         <string>导表启动服务器</string>
-        </property>
-       </widget>
-      </item>
+      <property name="horizontalSpacing">
+       <number>1</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>2</number>
+      </property>
       <item row="1" column="2">
        <widget class="QPushButton" name="CloseServerBtn">
         <property name="sizePolicy">
@@ -1006,14 +1029,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -1022,7 +1045,8 @@
          </font>
         </property>
         <property name="text">
-         <string>关闭本地服务器</string>
+         <string>关闭本地
+服务器</string>
         </property>
        </widget>
       </item>
@@ -1036,14 +1060,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -1052,11 +1076,43 @@
          </font>
         </property>
         <property name="text">
-         <string>启动本地服务器</string>
+         <string>启动本地
+服务器</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
+      <item row="1" column="0">
+       <widget class="QPushButton" name="ExcelOpenServerBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <stylestrategy>PreferDefault</stylestrategy>
+         </font>
+        </property>
+        <property name="text">
+         <string>导表启动
+服务器</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
        <widget class="QPushButton" name="OpenServerPathBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1066,14 +1122,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -1082,7 +1138,8 @@
          </font>
         </property>
         <property name="text">
-         <string>打开服务器目录</string>
+         <string>打开服务器
+目录</string>
         </property>
        </widget>
       </item>
@@ -1093,8 +1150,14 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetFixedSize</enum>
       </property>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="OpenTrunkPathBtn">
+      <property name="horizontalSpacing">
+       <number>1</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>2</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="OpenDevPathBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -1103,14 +1166,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -1119,7 +1182,8 @@
          </font>
         </property>
         <property name="text">
-         <string>打开trunk目录</string>
+         <string>打开dev
+目录</string>
         </property>
        </widget>
       </item>
@@ -1133,14 +1197,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -1149,37 +1213,8 @@
          </font>
         </property>
         <property name="text">
-         <string>切换成trunk资源</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="ResDevBtn">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>110</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <stylestrategy>PreferDefault</stylestrategy>
-         </font>
-        </property>
-        <property name="text">
-         <string>切换成dev资源</string>
+         <string>切换trunk
+资源</string>
         </property>
        </widget>
       </item>
@@ -1193,14 +1228,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -1209,7 +1244,8 @@
          </font>
         </property>
         <property name="text">
-         <string>切换成release资源</string>
+         <string>切换release
+资源</string>
         </property>
        </widget>
       </item>
@@ -1223,14 +1259,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -1239,12 +1275,13 @@
          </font>
         </property>
         <property name="text">
-         <string>打开Release目录</string>
+         <string>打开Release
+目录</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QPushButton" name="OpenDevPathBtn">
+      <item row="0" column="2">
+       <widget class="QPushButton" name="OpenTrunkPathBtn">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -1253,14 +1290,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
-          <height>30</height>
+          <width>90</width>
+          <height>70</height>
          </size>
         </property>
         <property name="font">
@@ -1269,7 +1306,70 @@
          </font>
         </property>
         <property name="text">
-         <string>打开dev目录</string>
+         <string>打开trunk
+目录</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="ResDevBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <stylestrategy>PreferDefault</stylestrategy>
+         </font>
+        </property>
+        <property name="text">
+         <string>切换dev
+资源</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="OpenSvnResPathBtn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <stylestrategy>PreferDefault</stylestrategy>
+         </font>
+        </property>
+        <property name="text">
+         <string>打开SVN
+目录</string>
         </property>
        </widget>
       </item>
@@ -1281,17 +1381,49 @@
        <enum>QLayout::SetFixedSize</enum>
       </property>
       <item>
-       <widget class="QPlainTextEdit" name="ExcelSearchInPut">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>25</height>
-         </size>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetFixedSize</enum>
         </property>
-        <property name="plainText">
-         <string/>
-        </property>
-       </widget>
+        <item>
+         <widget class="QPlainTextEdit" name="ExcelSearchInPut">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="plainText">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="RefreshTableBtn">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>57</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>刷新</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QScrollArea" name="ExcelLayout">
@@ -1318,7 +1450,7 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>360</width>
+           <width>364</width>
            <height>16</height>
           </rect>
          </property>

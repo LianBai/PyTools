@@ -2,9 +2,8 @@ import os
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFontMetrics, QIcon, QTextCursor
-from PyQt5.QtWidgets import QDialog, QFileDialog
+from PyQt5.QtWidgets import QDialog
 
-from JsonUtil import LoadJsonData, SaveJsonData
 from LogWidget_ui import Ui_LogWidget
 from TipWidget_ui import Ui_TipWidget
 

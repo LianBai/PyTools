@@ -1,5 +1,7 @@
 import os
 
+from AppUtil import ShowTipDialog
+
 
 def DeleteDir(dirPath, logWidget):
     logWidget.append(f"取消软链目录: {dirPath}")
@@ -25,5 +27,5 @@ def OpenPath(path, widget):
     if os.path.exists(path):
         os.startfile(path)
     else:
-        widget.ShowTipDialog("错误", f"路径不存在：{path}")
+        ShowTipDialog("错误", f"路径不存在：{path}", widget)
 
