@@ -6,6 +6,7 @@ import sys
 import requests
 import json
 import psutil
+import re
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog, QFileDialog, QApplication, QAction, QMainWindow, QPushButton
@@ -90,6 +91,18 @@ class MainWindow(QMainWindow, Ui_Form):
             self.RefreshBasicMenu()
         except Exception as e:
             ShowTipDialog("错误", f"初始化失败！\n{e}", self)
+
+        # unity_project_path = os.path.join(config["ProPath"], "client", "client")
+        # platform = 'Android'
+        # try:
+        #     # 获取指定平台的宏定义
+        #     get_symbols_command = (f'D:/Unity/Eidtor/Unity 2020.3.33f1/Editor/Unity.exe -batchmode -nographics '
+        #                            f'-projectPath {unity_project_path} -executeMethod SymbolManager.GetSymbols -quit -logFile - -buildTarget Android')
+        # except Exception as e:
+        #     ShowTipDialog("错误", f"获取宏定义失败！\n{e}", self)
+        #     return
+        # symbols = subprocess.check_output(get_symbols_command, shell=True).decode('utf-8').strip()
+        # ShowTipDialog("提示", symbols, self)
 
     def show(self, app=None):
         config = LoadJsonData()
@@ -210,13 +223,16 @@ class MainWindow(QMainWindow, Ui_Form):
             self.logDialog = LogWidget(self)
             self.logDialog.show()
             os.chdir(proPath)
-            process = self.UpdateGit()
-            if process.returncode == 0:
-                ShowTipDialog("成功", "GIT更新成功！", self)
-            else:
-                error = process.stdout.read() or process.stderr.read()
-                ShowTipDialog("错误", f"GIT更新失败！\n{error}", self)
-            process.wait()
+            try:
+                process = self.UpdateGit()
+                if process.returncode == 0:
+                    ShowTipDialog("成功", "GIT更新成功！", self)
+                else:
+                    error = process.stdout.read() or process.stderr.read()
+                    ShowTipDialog("错误", f"GIT更新失败！\n{error}", self)
+                process.wait()
+            except Exception as e:
+                ShowTipDialog("错误", f"GIT更新失败！\n{e}", self)
             os.chdir(originalPath)
         else:
             ShowTipDialog("错误","项目目录不存在，请重新设置", self)
@@ -232,14 +248,17 @@ class MainWindow(QMainWindow, Ui_Form):
             self.logDialog.show()
             if self.ResLink.text() != UnKnowDes:
                 os.chdir(os.path.join(svnPath, self.ResLink.text()))
-                process, isSuc = self.UpdateSvn(self.ResLink.text())
-                if isSuc:
-                    ShowTipDialog("成功", "SVN更新成功！", self)
-                else:
-                    error = process.stdout.read() or process.stderr.read()
-                    ShowTipDialog("错误", f"SVN更新失败！\n{error}", self)
-                if process is not None:
-                    process.wait()
+                try:
+                    process, isSuc = self.UpdateSvn(self.ResLink.text())
+                    if isSuc:
+                        ShowTipDialog("成功", "SVN更新成功！", self)
+                    else:
+                        error = process.stdout.read() or process.stderr.read()
+                        ShowTipDialog("错误", f"SVN更新失败！\n{error}", self)
+                    if process is not None:
+                        process.wait()
+                except Exception as e:
+                    ShowTipDialog("错误", f"SVN更新失败！\n{e}", self)
             else:
                 ShowTipDialog("错误", "未设置资源链接，SVN无法更新资源...", self)
             os.chdir(originalPath)
@@ -304,39 +323,44 @@ class MainWindow(QMainWindow, Ui_Form):
         if os.path.exists(os.path.join(svnPath, resLinkName)):
             os.chdir(os.path.join(svnPath, resLinkName))
         self.logDialog.append(f"开始更新svn的{resLinkName}资源...")
+        isSuc = False
         try:
             # 执行svn命令
             subprocess.check_output('svn --version', shell=True)
-            if os.path.exists(os.path.join(svnPath, resLinkName, ".svn")):
-                process = subprocess.Popen(['svn', 'update'], stdout=subprocess.PIPE,
-                                           stderr=subprocess.STDOUT, text=True, stdin=subprocess.PIPE)
-                isSuc = self.CommunicateProcessLog("svn", process)
-            else:
-                os.makedirs(os.path.join(svnPath, resLinkName))
-                os.chdir(os.path.join(svnPath, resLinkName))
-                process = subprocess.Popen(['svn', 'checkout', f"svn://10.26.15.200/svn/{resLinkName}",
-                                            os.path.join(svnPath, resLinkName)], stdout=subprocess.PIPE,
-                                           stderr=subprocess.STDOUT, text=True, stdin=subprocess.PIPE)
-                isSuc = self.ProcessLog(process, "utf-8")
-
-        except subprocess.CalledProcessError:
-            if "SvnExePath" in config and os.path.exists(config["SvnExePath"]):
+            try:
                 if os.path.exists(os.path.join(svnPath, resLinkName, ".svn")):
-                    process = subprocess.Popen([config["SvnExePath"], '/command:update',
-                                                f"/path:{os.path.join(svnPath, resLinkName)}", "/closeonend:0"],
-                                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-                                               stdin=subprocess.PIPE)
+                    process = subprocess.Popen(['svn', 'update'], stdout=subprocess.PIPE,
+                                               stderr=subprocess.STDOUT, text=True, stdin=subprocess.PIPE)
                     isSuc = self.CommunicateProcessLog("svn", process)
                 else:
                     os.makedirs(os.path.join(svnPath, resLinkName))
                     os.chdir(os.path.join(svnPath, resLinkName))
-                    process = subprocess.Popen([config["SvnExePath"], '/command:checkout',
-                                                f"/url:svn://10.26.15.200/svn/{resLinkName}",
-                                                f"/path:{os.path.join(svnPath, resLinkName)}"],
-                                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-                                               stdin=subprocess.PIPE)
-                    isSuc = self.CommunicateProcessLog("svn", process)
-
+                    process = subprocess.Popen(['svn', 'checkout', f"svn://10.26.15.200/svn/{resLinkName}",
+                                                os.path.join(svnPath, resLinkName)], stdout=subprocess.PIPE,
+                                               stderr=subprocess.STDOUT, text=True, stdin=subprocess.PIPE)
+                    isSuc = self.ProcessLog(process, "utf-8")
+            except Exception as e:
+                ShowTipDialog("错误", f"更新svn资源失败！\n{e}", self)
+        except subprocess.CalledProcessError:
+            if "SvnExePath" in config and os.path.exists(config["SvnExePath"]):
+                try:
+                    if os.path.exists(os.path.join(svnPath, resLinkName, ".svn")):
+                        process = subprocess.Popen([config["SvnExePath"], '/command:update',
+                                                    f"/path:{os.path.join(svnPath, resLinkName)}", "/closeonend:0"],
+                                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                                                   stdin=subprocess.PIPE)
+                        isSuc = self.CommunicateProcessLog("svn", process)
+                    else:
+                        os.makedirs(os.path.join(svnPath, resLinkName))
+                        os.chdir(os.path.join(svnPath, resLinkName))
+                        process = subprocess.Popen([config["SvnExePath"], '/command:checkout',
+                                                    f"/url:svn://10.26.15.200/svn/{resLinkName}",
+                                                    f"/path:{os.path.join(svnPath, resLinkName)}"],
+                                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                                                   stdin=subprocess.PIPE)
+                        isSuc = self.CommunicateProcessLog("svn", process)
+                except Exception as e:
+                    ShowTipDialog("错误", f"更新svn资源失败！\n{e}", self)
             else:
                 process = None
                 ShowTipDialog("错误", "请先设置TortoiseProc.exe路径！", self)
@@ -344,10 +368,14 @@ class MainWindow(QMainWindow, Ui_Form):
         return process, isSuc
 
     def UpdateGit(self):
-        self.logDialog.append("开始更新代码...")
-        process = subprocess.Popen(['git', 'pull', "--rebase", "--autostash"], stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT, text=True, stdin=subprocess.PIPE)
-        self.CommunicateProcessLog("git", process)
+        process = None
+        try:
+            self.logDialog.append("开始更新代码...")
+            process = subprocess.Popen(['git', 'pull', "--rebase", "--autostash"], stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT, text=True, stdin=subprocess.PIPE)
+            self.CommunicateProcessLog("git", process)
+        except Exception as e:
+            ShowTipDialog("错误", f"更新代码失败！\n{e}", self)
         return process
 
     def RefreshSvnPath(self):

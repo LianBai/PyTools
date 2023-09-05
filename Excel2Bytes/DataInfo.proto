@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+enum DataType {
+  INT = 0;
+  FLOAT = 1;
+  STRING = 2;
+}
+
+message Data {
+  oneof value {
+    int32 intValue = 2;
+    float floatValue = 3;
+    string stringValue = 4;
+  }
+}
+
+message DataInfo {
+  repeated Data excelData = 1;
+}
+
+//.\protoc.exe --python_out=. .\DataInfo.proto   #生成python文件
