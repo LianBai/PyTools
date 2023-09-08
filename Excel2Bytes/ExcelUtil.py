@@ -18,11 +18,9 @@ def GenerateNoneBytes(excelPath, sheetName, bytesName):
                 else:
                     data.append(row[col])
     data_bytes = bytes(str(data), 'utf-8')
-    # 使用 zlib 进行压缩
-    compressed_data = zlib.compress(data_bytes)
     # 将bytes保存到本地文件
     with open(f'{bytesName}.bytes', 'wb') as f:
-        f.write(compressed_data)
+        f.write(data_bytes)
 
 
 def GenerateProtobufBytes(excelPath, sheetName, bytesName):
