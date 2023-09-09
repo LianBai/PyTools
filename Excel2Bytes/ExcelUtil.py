@@ -1,65 +1,50 @@
-import zlib
+import math
+import struct
+import sys
 
-import pandas as pd
-import DataInfo_pb2
-import numpy as np
-
-
-def GenerateNoneBytes(excelPath, sheetName, bytesName):
-    excelData = pd.read_excel(excelPath, sheet_name=sheetName)
-    data = []
-    for index, row in excelData.iloc[4:].iterrows():
-        # 将数据添加到 Data1 对象中
-        for col in excelData.columns:
-            if 'c' in col[0].lower():  # 判断是否需要的数据
-                headDataArray = excelData[col].head(3)
-                if headDataArray[1] == 'LNGRef':
-                    data.append(9999)
-                else:
-                    data.append(row[col])
-    data_bytes = bytes(str(data), 'utf-8')
-    # 将bytes保存到本地文件
-    with open(f'{bytesName}.bytes', 'wb') as f:
-        f.write(data_bytes)
+typeMap = {
+        'int': ('i', 4),
+        'float': ('f', 4),
+        'double': ('d', 8),
+        'bool': ('?', 1),
+        'long': ('q', 8),
+        'short': ('h', 2),
+        'ushort': ('H', 2),
+        'uint': ('I', 4)
+    }
 
 
-def GenerateProtobufBytes(excelPath, sheetName, bytesName):
-    data = DataInfo_pb2.DataInfo()
-    excelData = pd.read_excel(excelPath, sheet_name=sheetName)
-    byteData = bytearray()
-    for index, row in excelData.iloc[4:].iterrows():
-        # 将数据添加到 Data1 对象中
-        for col in excelData.columns:
-            if 'c' in col[0].lower():  # 判断是否需要的数据
-                headDataArray = excelData[col].head(3)
-                item = data.excelData.add()
-                GenerateDataType(item, headDataArray[1], row[col])
-
-    byteData.extend(data.SerializeToString())
-    # 将bytes保存到本地文件
-    with open(f'{bytesName}.bytes', 'wb') as f:
-        f.write(byteData)
+def TurnBytes(fieldType, fieldValue):
+    if '[]' in fieldType:
+        singleType = fieldType[:-2]
+        size = 0
+        byte = b''
+        for singleValue in fieldValue.splite('|'):
+            sByte, sSize = SingleTurnBytes(singleType,singleValue)
+            byte += sByte
+            size += sSize
+        return byte, size
+    else:
+        return SingleTurnBytes(fieldType, fieldValue)
 
 
-def GenerateDataType(item, itemType, row):
-    if itemType == 'int':
-        if int(row) == '0' or int(row) == '':
-            item = None
-        else:
-            item.intValue = int(row)
-    elif itemType == 'float':
-        if float(row) == '0' or float(row) == '':
-            item = None
-        else:
-            item.floatValue = float(row)
-    elif itemType == 'string':
-        if str(row).isspace() or str(row) == '':
-            item = None
-        else:
-            item.stringValue = str(row)
-    elif itemType == 'LNGRef':
-        if str(row).isspace() or str(row) == '':
-            item = None
-        else:
-            item.intValue = 0
-    return item
+def SingleTurnBytes(fieldType, fieldValue):
+    if fieldType in typeMap:
+        fmt, size = typeMap[fieldType]
+        return struct.pack(fmt, fieldValue), size
+    elif fieldType == 'string':
+        fieldValue = str(fieldValue)
+        if fieldValue == 'nan':
+            byte = struct.pack(f"{typeMap['ushort'][0]}", 0)
+            size = typeMap['ushort'][1]
+            return byte, size
+        value = fieldValue.encode('utf-8')
+        byte = struct.pack(f"{typeMap['ushort'][0]}", len(value)) + struct.pack(f'{len(value)}s', value)
+        size = typeMap['ushort'][1] + len(value)
+        return byte, size
+    elif fieldType == 'LNGRef':
+        return struct.pack('i', 9999), 4
+    else:
+        sys.stderr.write(f"Error: Unknown field type '{fieldType}'\n")
+        input("Press Enter to exit...")
+        sys.exit()
