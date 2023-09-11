@@ -4,6 +4,7 @@ import struct
 import sys
 
 from CSScriptBuilder import CSScriptBuilder
+from LanguageUtil import GetLanguageKey
 from PathUtil import ScriptsPath
 
 TableAssembly = 'LBRuntime.Table'
@@ -22,6 +23,19 @@ typeMap = {
     }
 
 
+# 是否需要记录大小
+def IsNeedRecordSize(excelData):
+    isNeedRecord = False
+    for index, colum in excelData.iloc[0].items():  # 修改为第一行（索引为0）
+        # 将数据添加到 Data1 对象中
+        if 'c' in colum.lower():
+            fieldType = excelData.iloc[2][index]  # 修改为当前行（索引为1）的当前列
+            if fieldType not in typeMap and fieldType != 'LNGRef':  # 修改为当前行（索引为2）的当前列
+                return True
+    return False
+
+
+# 将Excel数据转换为二进制
 def TurnBytes(fieldType, fieldValue):
     if '[]' in fieldType:
         singleType = fieldType[:-2]
@@ -36,6 +50,7 @@ def TurnBytes(fieldType, fieldValue):
         return SingleTurnBytes(fieldType, fieldValue)
 
 
+# 将单个数据转换为二进制
 def SingleTurnBytes(fieldType, fieldValue):
     if fieldType in typeMap:
         fmt, size = typeMap[fieldType]
@@ -51,13 +66,17 @@ def SingleTurnBytes(fieldType, fieldValue):
         size = typeMap['ushort'][1] + len(value)
         return byte, size
     elif fieldType == 'LNGRef':
-        return struct.pack('i', 9999), 4
+        fieldValue = str(fieldValue)
+        if fieldValue == 'nan':
+            struct.pack('I', 0), 4
+        return struct.pack('I', GetLanguageKey(fieldValue)), 4
     else:
         sys.stderr.write(f"Error: Unknown field type '{fieldType}'\n")
         input("Press Enter to exit...")
         sys.exit()
 
 
+# 生成单个字段的二进制文件
 def CreateTableManagerCs():
     script = CSScriptBuilder()
     script.AppendUsing('System.Collections.Generic')

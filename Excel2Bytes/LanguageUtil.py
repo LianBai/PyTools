@@ -69,3 +69,16 @@ def SaveLangData(key, data):
     for key, value in data.items():
         worksheet.append([key, value])
     workbook.save(LanguageXlsxPath)
+
+
+def GetLanguageKey(value):
+    if value in LanguageDict[CNLanguage].values():
+        for key, val in LanguageDict[CNLanguage].items():
+            if val == value:
+                return key
+    else:
+        maxKey = max(LanguageDict[CNLanguage].keys())
+        newKey = maxKey + 1
+        LanguageDict[CNLanguage][newKey] = value
+        return newKey
+
