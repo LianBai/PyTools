@@ -1,5 +1,7 @@
 import os
 
+from CSScriptBuilder import CSScriptBuilder
+from ExcelUtil import CreateTableManagerCs
 from FieldGenerate import GenerateSingleFieldBytes
 from LanguageUtil import InitLanguage, SaveLanguage
 from PathUtil import InitFileDir
@@ -13,9 +15,11 @@ def InitTable():
 
 
 if __name__ == '__main__':
-    InitTable()
-    GenerateSingleFieldBytes(filePath, "System")
-    SaveLanguage()
+    # InitTable()
+    # GenerateSingleFieldBytes(filePath, "System")
+    # SaveLanguage()
+    CreateTableManagerCs()
+
 
 
 

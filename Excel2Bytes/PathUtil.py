@@ -6,6 +6,7 @@ from LogUtil import ShowLog
 SavePath = os.path.join(ExePath(), 'Save')
 TablePath = os.path.join(SavePath, 'Table')
 BytesPath = os.path.join(SavePath, 'Bytes')
+ScriptsPath = os.path.join(SavePath, 'Scripts')
 LanguageXlsxPath = os.path.join(TablePath, 'Languages.xlsx')
 
 
@@ -19,3 +20,6 @@ def InitFileDir():
     if not os.path.exists(BytesPath):
         os.mkdir(BytesPath)
         ShowLog('创建文件夹: Bytes')
+    if not os.path.exists(ScriptsPath):
+        os.mkdir(ScriptsPath)
+        ShowLog('创建文件夹: Scripts')
