@@ -14,18 +14,18 @@ def TurnBytesByExcel(excelData, startRow, startColumn, isNeedRecordSize):
     columns = excelData.columns[startColumn:] if startColumn > 0 else excelData.columns
     data_bytes = b''
     for index, row in rows:
+        tBytes = b''
+        tSize = 0
         # 将数据添加到 Data1 对象中
         for col in columns:
-            tSize = 0
-            tBytes = b''
             if 'c' in col[0].lower():  # 判断是否需要的数据
                 headDataArray = excelData[col].head(3)
                 data = TurnBytes(headDataArray[1], row[col])
                 tBytes += data[0]
                 tSize += data[1]
-            if isNeedRecordSize:
-                data_bytes += struct.pack(f"{typeMap['ushort'][0]}", tSize)
-            data_bytes += tBytes
+        if isNeedRecordSize:
+            data_bytes += struct.pack(f"{typeMap['byte'][0]}", tSize)
+        data_bytes += tBytes
     return data_bytes
 
 
