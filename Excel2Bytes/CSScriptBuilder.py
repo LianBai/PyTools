@@ -1,5 +1,18 @@
+import os
+
+from PathUtil import ScriptsPath
+
+
 class CSScriptBuilder(list):
     BlackNum = 0
+
+    def Append(self, message):
+        if self.BlackNum > 0:
+            self.append('\t' * self.BlackNum)
+        self.append(message)
+
+    def AppendEnter(self):
+        self.Append('\n')
 
     def AppendLine(self, message):
         if len(self) > 0:
@@ -81,7 +94,39 @@ class CSScriptBuilder(list):
         self.AppendLine(f'{modifier} {returnType} {methodName}({parameters})')
         self.BeginBrace()
 
+    def BeginConstructionMethod(self, methodName, modifier="public", parameters=''):
+        self.AppendLine(f'{modifier} {methodName}({parameters})')
+        self.BeginBrace()
+
     def EndMethod(self):
+        self.EndBrace()
+
+    def BeginIf(self, condition):
+        self.AppendLine(f'if ({condition})')
+        self.BeginBrace()
+
+    def EndIf(self):
+        self.EndBrace()
+
+    def BeginWhile(self, condition):
+        self.AppendLine(f'while ({condition})')
+        self.BeginBrace()
+
+    def EndWhile(self):
+        self.EndBrace()
+
+    def BeginTry(self):
+        self.AppendLine('try')
+        self.BeginBrace()
+
+    def EndTry(self):
+        self.EndBrace()
+
+    def BeginCatch(self, exceptionType):
+        self.AppendLine(f'catch ({exceptionType})')
+        self.BeginBrace()
+
+    def EndCatch(self):
         self.EndBrace()
 
     def BeginBlank(self):
@@ -110,7 +155,9 @@ class CSScriptBuilder(list):
     def ToString(self):
         return ''.join(self)
 
-    def GenerateScript(self, filePath):
-        filePath = filePath.replace('.cs', '')
-        with open(f'{filePath}.cs', 'w', encoding='utf-8') as f:
+    def GenerateScript(self, fileName, isDefPath=True):
+        fileName = fileName.replace('.cs', '')
+        if isDefPath:
+            fileName = os.path.join(ScriptsPath, fileName)
+        with open(f'{fileName}.cs', 'w', encoding='utf-8') as f:
             f.write(self.ToString())
