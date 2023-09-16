@@ -2,11 +2,10 @@ import os
 import re
 import struct
 import sys
+from enum import Enum
 
 import numpy as np
 
-from ExcelCShapUtil import GetFieldProperty
-from FieldGenerate import GenerateScriptType
 from FileUtil import CopyFile
 from LanguageUtil import GetLanguageKey
 from LogUtil import ShowLog
@@ -37,6 +36,13 @@ typeMap = {
     }
 
 
+class GenerateScriptType(Enum):
+    FieldType = 0
+    FindType = 1
+    LNGType = 2
+    CustomType = 3
+
+
 def GetCShapeReadType(fieldType):
     if 'map' in fieldType.lower():
         pattern = r"map\|(\w+)\|(\w+)"
@@ -65,6 +71,16 @@ def GetCShapeType(fieldType):
     return fieldType
 
 
+def GetFieldProperty(fieldType, fieldName, fieldValue, script):
+    valueType = GetCShapeType(fieldType)
+    if 'LNGRef' in fieldType:
+        script.AppendLine(
+            f"public static {valueType} {fieldName} => TableLanguage.Find(Instance.ReadData({fieldValue}));")
+    else:
+        script.AppendLine(
+            f"public static {valueType} {fieldName} => Instance.ReadData({fieldValue});")
+
+
 # 将Excel数据转换为二进制
 def TurnBytesByExcel(excelData, startRow, startColumn, isNeedRecordSize, generateScriptType, script=None):
     rows = excelData.iloc[startRow:].iterrows() if startRow > 0 else excelData.iterrows()
@@ -91,7 +107,7 @@ def TurnBytesByExcel(excelData, startRow, startColumn, isNeedRecordSize, generat
                 data = TurnBytes(fieldType, fieldValue)
                 tBytes += data[0]
                 tSize += data[1]
-        if isNeedRecordSize and generateScriptType != GenerateScriptType.LNGType:
+        if generateScriptType != GenerateScriptType.FieldType and generateScriptType != GenerateScriptType.LNGType:
             tSize += typeMap[SizeMap][1]
             dataBytes += struct.pack(f"{typeMap[SizeMap][0]}", tSize)
         dataBytes += tBytes
@@ -241,3 +257,13 @@ def CopyBytes():
     for root, dirs, files in os.walk(BytesPath):
         for file in files:
             CopyFile(os.path.join(BytesPath, file), os.path.join(BytesExportPath, file))
+
+
+def GetScriptsName(excelPath, sheetName, scriptName=None):
+    if scriptName is None:
+        baseName = os.path.basename(excelPath).split(".")[0]
+        if baseName.lower() == sheetName.lower():
+            scriptName = baseName
+        else:
+            scriptName = f'{baseName}{sheetName}'
+    return f'Table{scriptName}'

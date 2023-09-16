@@ -105,6 +105,10 @@ class CSScriptBuilder(list):
         self.AppendLine(f'if ({condition})')
         self.BeginBrace()
 
+    def BeginElif(self, condition):
+        self.AppendLine(f'else if ({condition})')
+        self.BeginBrace()
+
     def EndIf(self):
         self.EndBrace()
 

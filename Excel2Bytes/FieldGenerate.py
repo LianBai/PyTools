@@ -5,25 +5,15 @@ import pandas as pd
 
 from CSScriptBuilder import CSScriptBuilder
 from ExcelCShapUtil import FieldExcelScript, LNGExcelScript
-from ExcelUtil import IsNeedRecordSize, GetCShapeReadType, TurnBytesByExcel
+from ExcelUtil import IsNeedRecordSize, GetCShapeReadType, TurnBytesByExcel, GenerateScriptType, GetScriptsName
 from LanguageUtil import CNLanguage
 from LogUtil import ShowLog
 from PathUtil import BytesPath, LanguageXlsxPath
-from enum import Enum
-
-
-class GenerateScriptType(Enum):
-    FieldType = 0
-    FindType = 1
-    LNGType = 2
-    CustomType = 3
 
 
 # 生成单个字段的二进制文件
 def GenerateFieldBytes(excelPath, sheetName, scriptName=None):
-    if scriptName is None:
-        scriptName = f'{os.path.basename(excelPath).split(".")[0]}{sheetName}'
-    scriptName = f'Table{scriptName}'
+    scriptName = GetScriptsName(excelPath, sheetName, scriptName)
     excelData = pd.read_excel(excelPath, sheet_name=sheetName, header=None)
     firstRow = excelData.iloc[0]
     columns_with_c = np.where(firstRow.str.contains('c', case=False))[0]
