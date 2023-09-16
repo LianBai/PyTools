@@ -1,5 +1,3 @@
-import os
-
 from CSScriptBuilder import CSScriptBuilder
 from ExcelUtil import TableLoadAssembly, GetCShapeType, TableStructAssembly, TableResLoadAssembly, OfferMap, SizeMap, \
     typeMap
