@@ -85,5 +85,8 @@ def GetLanguageKey(value):
         maxKey = max(LanguageDict[CNLanguage].keys())
         newKey = maxKey + 1
         LanguageDict[CNLanguage][newKey] = value
+        if IsUpdateLng:
+            for key in LanguageKey:
+                LanguageDict[key][newKey] = value
         return newKey
 
