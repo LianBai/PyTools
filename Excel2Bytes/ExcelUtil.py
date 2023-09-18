@@ -7,7 +7,7 @@ from enum import Enum
 import numpy as np
 
 from FileUtil import CopyFile
-from LanguageUtil import GetLanguageKey
+from LanguageUtil import GetLanguageKey, TableLanguageCSName
 from LogUtil import ShowLog
 from PathUtil import ScriptsPath, ScriptsExportPath, BytesPath, BytesExportPath
 
@@ -36,6 +36,36 @@ typeMap = {
     }
 
 
+def GetTypeRead(fieldType):
+    if fieldType == 'int':
+        return 'ReadInt32'
+    elif fieldType == 'float':
+        return 'ReadSingle'
+    elif fieldType == 'double':
+        return 'ReadDouble'
+    elif fieldType == 'bool':
+        return 'ReadBoolean'
+    elif fieldType == 'long':
+        return 'ReadInt64'
+    elif fieldType == 'short':
+        return 'ReadInt16'
+    elif fieldType == 'ushort':
+        return 'ReadUInt16'
+    elif fieldType == 'uint':
+        return 'ReadUInt32'
+    elif fieldType == 'byte':
+        return 'ReadByte'
+    elif fieldType == 'uint8':
+        return 'ReadByte'
+    elif fieldType == 'int64':
+        return 'ReadInt64'
+    elif fieldType == 'uint64':
+        return 'ReadUInt64'
+    elif fieldType == 'string':
+        return 'ReadString'
+    elif fieldType == 'LNGRef':
+        return 'ReadUInt32'
+
 class GenerateScriptType(Enum):
     FieldType = 0
     FindType = 1
@@ -43,32 +73,103 @@ class GenerateScriptType(Enum):
     CustomType = 3
 
 
-def GetCShapeReadType(fieldType):
-    if 'map' in fieldType.lower():
-        pattern = r"map\|(\w+)\|(\w+)"
-        replacement = r"Dictionary<\1,\2>"
-        fieldType = re.sub(pattern, replacement, fieldType, flags=re.IGNORECASE)
-    return GetCShapeReadBaseType(fieldType)
-
-
-def GetCShapeReadBaseType(fieldType):
+# 读取bytes的时候的类型
+def GetCShapeType(fieldType, isBase=False):
     if 'LNGRef' in fieldType:
-        return fieldType.replace('LNGRef', 'uint')
-    if 'int64' in fieldType:
-        return fieldType.replace('int64', 'long')
-    if 'uint64' in fieldType:
-        return fieldType.replace('uint64', 'ulong')
-    return fieldType
-
-
-def GetCShapeType(fieldType):
-    if 'LNGRef' in fieldType:
+        if isBase:
+            return fieldType.replace('LNGRef', 'uint')
         return fieldType.replace('LNGRef', 'string')
     if 'int64' in fieldType:
         return fieldType.replace('int64', 'long')
     if 'uint64' in fieldType:
         return fieldType.replace('uint64', 'ulong')
+    if 'map' in fieldType.lower():
+        pattern = r"map\|(\w+)\|(\w+)"
+        replacement = r"Dictionary<\1,\2>"
+        return re.sub(pattern, replacement, fieldType, flags=re.IGNORECASE)
+    if fieldType.replace('[]', '') in typeMap:
+        return fieldType
     return fieldType
+
+
+def GetDataProperty(fieldType, fieldName, script):
+    valueType = GetCShapeType(fieldType)
+    if 'LNGRef' in fieldType:
+        script.AppendLine(f"private {valueType} {fieldName}Id;")
+        script.AppendLine(f"public {valueType} {fieldName} => Table{TableLanguageCSName}.Find({fieldName}Id);")
+    else:
+        script.AppendLine(f"public {valueType} {fieldName};")
+
+
+def GetDataAssignment(fieldType, fieldName, script):
+    if '[][]' in fieldType:
+        script.AppendLine(f"var {fieldName}Size = reader.ReadUInt16();")
+        script.AppendLine(f"{fieldName} = new {GetCShapeType(fieldType)}[{fieldName}Size][];")
+        script.BeginFor(f"var {fieldName}Index = 0; {fieldName}Index < {fieldName}Size; {fieldName}Index++")
+        script.AppendLine(f"var {fieldName}Size2 = reader.ReadUInt16();")
+        script.AppendLine(f"{fieldName}[{fieldName}Index] = new {GetCShapeType(fieldType)}[{fieldName}Size2];")
+        script.BeginFor(f"var {fieldName}Index2 = 0; {fieldName}Index2 < {fieldName}Size2; {fieldName}Index2++")
+        GetDataAssignmentBase(fieldType[:-4], f"{fieldName}[{fieldName}Index][{fieldName}Index2]", script)
+        script.EndFor()
+        script.EndFor()
+    elif '[]' in fieldType:
+        script.AppendLine(f"var {fieldName}Size = reader.ReadUInt16();")
+        script.AppendLine(f"{fieldName} = new {GetCShapeType(fieldType)}[{fieldName}Size];")
+        script.BeginFor(f"var {fieldName}Index = 0; {fieldName}Index < {fieldName}Size; {fieldName}Index++")
+        GetDataAssignmentBase(fieldType[:-2], f"{fieldName}[{fieldName}Index]", script)
+        script.EndFor()
+    elif 'slc' in fieldType.lower():
+        script.AppendLine(f"var {fieldName}Size = reader.ReadUInt16();")
+        script.AppendLine(f"{fieldName} = new {GetCShapeType(fieldType)}[{fieldName}Size];")
+        script.BeginFor(f"var {fieldName}Index = 0; {fieldName}Index < {fieldName}Size; {fieldName}Index++")
+        GetDataAssignmentBase(fieldType.replace('slc|', ''), f"{fieldName}[{fieldName}Index]", script)
+        script.EndFor()
+    elif 'map' in fieldType.lower():
+        pattern = r"map\|(\w+)\|(\w+)"
+        matches = re.findall(pattern, fieldType, flags=re.IGNORECASE)
+        type1 = matches[0][0]
+        type2 = matches[0][1]
+        script.AppendLine(f"var {fieldName}Size = reader.ReadUInt16();")
+        script.AppendLine(f"{fieldName} = new Dictionary<{GetCShapeType(type1)}, {GetCShapeType(type2)}>();")
+        script.BeginFor(f"var {fieldName}Index = 0; {fieldName}Index < {fieldName}Size; {fieldName}Index++")
+        GetDataAssignmentBase(type1, f"key", script)
+        GetDataAssignmentBase(type2, f"value", script)
+        script.AppendLine(f"{fieldName}.Add(key, value);")
+        script.EndFor()
+    elif 'dictionary' in fieldType.lower():
+        pattern = r"dictionary\|(\w+)\|(\w+)"
+        matches = re.findall(pattern, fieldType, flags=re.IGNORECASE)
+        type1 = matches[0][0]
+        type2 = matches[0][1]
+        script.AppendLine(f"var {fieldName}Size = reader.ReadUInt16();")
+        script.AppendLine(f"{fieldName} = new Dictionary<{GetCShapeType(type1)}, {GetCShapeType(type2)}>();")
+        script.BeginFor(f"var {fieldName}Index = 0; {fieldName}Index < {fieldName}Size; {fieldName}Index++")
+        GetDataAssignmentBase(type1, f"key", script)
+        GetDataAssignmentBase(type2, f"value", script)
+        script.AppendLine(f"{fieldName}.Add(key, value);")
+        script.EndFor()
+    elif 'double_slc' in fieldType.lower():
+        script.AppendLine(f"var {fieldName}Size = reader.ReadUInt16();")
+        script.AppendLine(f"{fieldName} = new {GetCShapeType(fieldType)}[{fieldName}Size][];")
+        script.BeginFor(f"var {fieldName}Index = 0; {fieldName}Index < {fieldName}Size; {fieldName}Index++")
+        script.AppendLine(f"var {fieldName}Size2 = reader.ReadUInt16();")
+        script.AppendLine(f"{fieldName}[{fieldName}Index] = new {GetCShapeType(fieldType)}[{fieldName}Size2][];")
+        script.BeginFor(f"var {fieldName}Index2 = 0; {fieldName}Index2 < {fieldName}Size2; {fieldName}Index2++")
+        script.AppendLine(f"var {fieldName}Size3 = reader.ReadUInt16();")
+        script.AppendLine(f"{fieldName}[{fieldName}Index][{fieldName}Index2] = new {GetCShapeType(fieldType)}[{fieldName}Size3];")
+        script.BeginFor(f"var {fieldName}Index3 = 0; {fieldName}Index3 < {fieldName}Size3; {fieldName}Index3++")
+        GetDataAssignmentBase(fieldType.replace('double_slc|', ''), f"{fieldName}[{fieldName}Index][{fieldName}Index2][{fieldName}Index3]", script)
+        script.EndFor()
+        script.EndFor()
+        script.EndFor()
+    else:
+        GetDataAssignmentBase(fieldType, fieldName, script)
+
+
+def GetDataAssignmentBase(fieldType, fieldName, script):
+    if 'LNGRef' in fieldType:
+        script.AppendLine(f"{fieldName}Id = reader.ReadUInt32();")
+    script.AppendLine(f"{fieldName} = reader.{GetTypeRead(fieldType)}();")
 
 
 def GetFieldProperty(fieldType, fieldName, fieldValue, script):

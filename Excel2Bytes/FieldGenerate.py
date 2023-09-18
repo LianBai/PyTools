@@ -5,7 +5,7 @@ import pandas as pd
 
 from CSScriptBuilder import CSScriptBuilder
 from ExcelCShapUtil import FieldExcelScript, LNGExcelScript
-from ExcelUtil import IsNeedRecordSize, GetCShapeReadType, TurnBytesByExcel, GenerateScriptType, GetScriptsName
+from ExcelUtil import IsNeedRecordSize, TurnBytesByExcel, GenerateScriptType, GetScriptsName, GetCShapeType
 from LanguageUtil import CNLanguage
 from LogUtil import ShowLog
 from PathUtil import BytesPath, LanguageXlsxPath
@@ -20,9 +20,9 @@ def GenerateFieldBytes(excelPath, sheetName, scriptName=None):
     firstIndex = columns_with_c[0]
     secondIndex = columns_with_c[1]
     firstValueOldType = str(excelData.iloc[1, firstIndex])
-    firstValueType = GetCShapeReadType(firstValueOldType)
+    firstValueType = GetCShapeType(firstValueOldType, True)
     secValueOldType = str(excelData.iloc[2, secondIndex])
-    secValueType = GetCShapeReadType(secValueOldType)
+    secValueType = GetCShapeType(secValueOldType, True)
     Scripts = CSScriptBuilder()
     data_bytes = TurnBytesByExcel(excelData, 4, 1, IsNeedRecordSize(excelData), GenerateScriptType.FieldType, Scripts)
     FieldExcelScript(scriptName, firstValueType, secValueType, scriptName.lower(), Scripts)

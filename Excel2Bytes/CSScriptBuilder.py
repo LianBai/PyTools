@@ -130,6 +130,27 @@ class CSScriptBuilder(list):
         self.AppendLine(f'catch ({exceptionType})')
         self.BeginBrace()
 
+    def BeginForEach(self, name, collection, singleType='var'):
+        self.AppendLine(f'foreach ({singleType} {name} in {collection})')
+        self.BeginBrace()
+
+    def EndForEach(self):
+        self.EndBrace()
+
+    def BeginFor(self, condition):
+        self.AppendLine(f'for ({condition})')
+        self.BeginBrace()
+
+    def EndFor(self):
+        self.EndBrace()
+
+    def BeginForRange(self, name, start, end):
+        self.AppendLine(f'for (int {name} = {start}; {name} < {end}; {name}++)')
+        self.BeginBrace()
+
+    def EndForRange(self):
+        self.EndBrace()
+
     def EndCatch(self):
         self.EndBrace()
 

@@ -9,6 +9,7 @@ IsUpdateLng = False
 CNLanguage = 'cn'
 LanguageKey = ['tw', 'en']
 LanguageDict = {}
+TableLanguageCSName = 'Language'
 
 
 def InitLanguage():

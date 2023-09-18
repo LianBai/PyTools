@@ -1,6 +1,6 @@
 from CSScriptBuilder import CSScriptBuilder
 from ExcelUtil import TableLoadAssembly, GetCShapeType, TableStructAssembly, TableResLoadAssembly, OfferMap, SizeMap, \
-    typeMap
+    typeMap, GetDataProperty, GetTypeRead, GetDataAssignment
 
 
 def FieldExcelScript(scriptName, firstValueType, secValueType, bytesName, scriptBuilder):
@@ -146,12 +146,12 @@ def FindExcelScript(scriptName, pair, bytesName):
     firstType = GetCShapeType(pair[0][1])
     firstName = pair[0][0]
     for field in pair:
-        Scripts.AppendField(field[0], GetCShapeType(field[1]), 'public')
+        GetDataProperty(field[1], field[0], Scripts)
     Scripts.AppendEmptyLine()
     Scripts.BeginConstructionMethod('Data', 'public', f'BinaryReader reader, {GetCShapeType(firstType)} key')
     Scripts.AppendLine(f'{firstName} = key;')
     for field in pair[1:]:
-        Scripts.AppendLine(f'{field[0]} = reader.{GetTypeRead(field[1])}();')
+        GetDataAssignment(field[1], field[0], Scripts)
     Scripts.EndClass()
     Scripts.EndClass()
     Scripts.AppendLine(f'private static {scriptName} s_Instance;')
@@ -201,33 +201,3 @@ def FindExcelScript(scriptName, pair, bytesName):
     Scripts.EndNamespace()
     Scripts.GenerateScript(scriptName)
 
-
-def GetTypeRead(fieldType):
-    if fieldType == 'int':
-        return 'ReadInt32'
-    elif fieldType == 'float':
-        return 'ReadSingle'
-    elif fieldType == 'double':
-        return 'ReadDouble'
-    elif fieldType == 'bool':
-        return 'ReadBoolean'
-    elif fieldType == 'long':
-        return 'ReadInt64'
-    elif fieldType == 'short':
-        return 'ReadInt16'
-    elif fieldType == 'ushort':
-        return 'ReadUInt16'
-    elif fieldType == 'uint':
-        return 'ReadUInt32'
-    elif fieldType == 'byte':
-        return 'ReadByte'
-    elif fieldType == 'uint8':
-        return 'ReadByte'
-    elif fieldType == 'int64':
-        return 'ReadInt64'
-    elif fieldType == 'uint64':
-        return 'ReadUInt64'
-    elif fieldType == 'string':
-        return 'ReadString'
-    elif fieldType == 'LNGRef':
-        return 'ReadUInt32'
