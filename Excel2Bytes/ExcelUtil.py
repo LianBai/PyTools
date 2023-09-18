@@ -11,6 +11,7 @@ from FileUtil import CopyFile
 from LanguageUtil import GetLanguageKey, TableLanguageCSName
 from LogUtil import ShowLog
 from PathUtil import ScriptsPath, ScriptsExportPath, BytesPath, BytesExportPath
+from ResRefUtil import AddResRef
 
 TAbleRootNamespace = 'ZHRuntime'
 TableAssembly = f'{TAbleRootNamespace}.Table'
@@ -86,6 +87,8 @@ def GetTypeRead(fieldType):
         return 'ReadString'
     elif fieldType == 'LNGRef':
         return 'ReadUInt32'
+    elif fieldType == 'ResName':
+        return 'ReadString'
 
 
 class GenerateScriptType(Enum):
@@ -101,6 +104,8 @@ def GetCShapeType(fieldType, isBase=False):
         if isBase:
             return fieldType.replace('LNGRef', 'uint')
         return fieldType.replace('LNGRef', 'string')
+    if 'ResName' in fieldType:
+        return fieldType.replace('ResName', 'string')
     if 'int64' in fieldType:
         return fieldType.replace('int64', 'long')
     if 'uint64' in fieldType:
@@ -191,6 +196,8 @@ def GetDataAssignment(fieldType, fieldName, script):
 def GetDataAssignmentBase(fieldType, fieldName, script):
     if 'LNGRef' in fieldType:
         script.AppendLine(f"{fieldName}Id = reader.ReadUInt32();")
+    if 'ResName' in fieldType:
+        script.AppendLine(f"{fieldName} = reader.ReadString();")
     else:
         script.AppendLine(f"{fieldName} = reader.{GetTypeRead(fieldType)}();")
 
@@ -200,6 +207,9 @@ def GetFieldProperty(fieldType, fieldName, fieldValue, script):
     if 'LNGRef' in fieldType:
         script.AppendLine(
             f"public static {valueType} {fieldName} => TableLanguage.Find(Instance.ReadData({fieldValue}));")
+    if 'ResName' in fieldType:
+        script.AppendLine(
+            f"public static {valueType} {fieldName} => Instance.ReadData({fieldValue});")
     else:
         script.AppendLine(
             f"public static {valueType} {fieldName} => Instance.ReadData({fieldValue});")
@@ -243,7 +253,7 @@ def TurnBytesByExcel(excelData, startRow, startColumn, isNeedRecordSize, generat
 def IsNeedRecordSize(excelData):
     for index, colum in excelData.iloc[0].items():  # 修改为第一行（索引为0）
         # 将数据添加到 Data1 对象中
-        if 'c' in colum.lower():
+        if 'c' in str(colum).lower():
             fieldType = excelData.iloc[2, index]  # 修改为当前行（索引为1）的当前列
             if fieldType in typeMap or fieldType == 'LNGRef':  # 修改为当前行（索引为2）的当前列
                 return False
@@ -272,10 +282,11 @@ def TurnBytes(fieldType, fieldValue):
         singleType = fieldType[:-2]
         size = 0
         tByte = b''
-        for singleValue in fieldValue.splite('|'):
-            sByte, sSize = SingleTurnBytes(singleType, singleValue)
-            tByte += sByte
-            size += sSize
+        if not pd.isna(fieldValue):
+            for singleValue in fieldValue.split('|'):
+                sByte, sSize = SingleTurnBytes(singleType, singleValue)
+                tByte += sByte
+                size += sSize
         byte = struct.pack(f"{typeMap[SizeMap][0]}", size) + tByte
         size += typeMap[SizeMap][1]
         return byte, size
@@ -283,7 +294,7 @@ def TurnBytes(fieldType, fieldValue):
         singleType = fieldType.replace('slc|', '')
         size = 0
         tByte = b''
-        for singleValue in fieldValue.splite('|'):
+        for singleValue in fieldValue.split('|'):
             sByte, sSize = SingleTurnBytes(singleType, singleValue)
             tByte += sByte
             size += sSize
@@ -364,6 +375,17 @@ def SingleTurnBytes(fieldType, fieldValue):
         if pd.isna(fieldValue):
             struct.pack('I', 0), 4
         return struct.pack('I', GetLanguageKey(fieldValue)), 4
+    elif 'ResName' in fieldType:
+        if pd.isna(fieldValue):
+            byte = struct.pack(f"{typeMap[SizeMap][0]}", 0)
+            size = typeMap[SizeMap][1]
+            return byte, size
+        value = fieldValue.encode('utf-8')
+        strSize = len(str(value))
+        AddResRef(fieldValue)
+        byte = struct.pack(f"{typeMap[SizeMap][0]}", strSize) + struct.pack(f'{strSize}s', value)
+        size = typeMap[SizeMap][1] + strSize
+        return byte, size
     else:
         sys.stderr.write(f"Error: Unknown field type '{fieldType}'\n")
         input("Press Enter to exit...")

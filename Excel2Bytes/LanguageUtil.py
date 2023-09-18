@@ -60,7 +60,6 @@ def ReadLangData(key):
         keyLng = {}
         for index, row in df.iloc[3:].iterrows():
             keyLng[row.iloc[0]] = row.iloc[1]
-            print(row.iloc[0], row.iloc[1])
         LanguageDict[key] = keyLng
 
 
