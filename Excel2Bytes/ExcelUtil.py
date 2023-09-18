@@ -15,7 +15,7 @@ from PathUtil import ScriptsPath, ScriptsExportPath, BytesPath, BytesExportPath
 TAbleRootNamespace = 'ZHRuntime'
 TableAssembly = f'{TAbleRootNamespace}.Table'
 TableLoadAssembly = f'{TAbleRootNamespace}.Table.Loader'
-TableStructAssembly = f'{TAbleRootNamespace}.Table.Struct'
+TableStructAssembly = f'{TAbleRootNamespace}.Table.Structure'
 TableResLoadAssembly = 'ZHUnity'
 
 SizeMap = 'ushort'
@@ -66,6 +66,8 @@ def GetTypeRead(fieldType):
         return 'ReadBoolean'
     elif fieldType == 'long':
         return 'ReadInt64'
+    elif fieldType == 'ulong':
+        return 'ReadUInt64'
     elif fieldType == 'short':
         return 'ReadInt16'
     elif fieldType == 'ushort':

@@ -2,7 +2,6 @@ import os
 
 import pandas as pd
 
-from CSScriptBuilder import CSScriptBuilder
 from ExcelCShapUtil import FindExcelScript
 from ExcelUtil import TurnBytesByExcel, IsNeedRecordSize, GenerateScriptType, GetScriptsName
 from LogUtil import ShowLog
