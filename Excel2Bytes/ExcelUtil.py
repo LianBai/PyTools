@@ -11,9 +11,10 @@ from LanguageUtil import GetLanguageKey, TableLanguageCSName
 from LogUtil import ShowLog
 from PathUtil import ScriptsPath, ScriptsExportPath, BytesPath, BytesExportPath
 
-TableAssembly = 'ZHRuntime.Table'
-TableLoadAssembly = 'ZHRuntime.Table.Loader'
-TableStructAssembly = 'ZHRuntime.Table.Struct'
+TAbleRootNamespace = 'ZHRuntime'
+TableAssembly = f'{TAbleRootNamespace}.Table'
+TableLoadAssembly = f'{TAbleRootNamespace}.Table.Loader'
+TableStructAssembly = f'{TAbleRootNamespace}.Table.Struct'
 TableResLoadAssembly = 'ZHUnity'
 
 SizeMap = 'ushort'
