@@ -20,7 +20,7 @@ def CopyExportFiles():
 if __name__ == '__main__':
     InitTable()
     GenerateFieldBytes(os.path.join(TablePath, 'Text.xlsx'), "System")
-    GenerateFindBytes(os.path.join(TablePath, 'Level.xlsx'), "Chase", "LevelChase2")
+    GenerateFindBytes(os.path.join(TablePath, 'Level.xlsx'), "Level", "Level2")
     # GenerateFieldBytes(os.path.join(TablePath, 'Text.xlsx'), "SystemArray")
     GenerateLNGBytes(TableLanguageCSName)
     SaveLanguage()

@@ -5,6 +5,7 @@ import sys
 from enum import Enum
 
 import numpy as np
+import pandas as pd
 
 from FileUtil import CopyFile
 from LanguageUtil import GetLanguageKey, TableLanguageCSName
@@ -34,6 +35,23 @@ typeMap = {
         'ulong': ('Q', 8),
         'int64': ('q', 8),
         'uint64': ('Q', 8)
+    }
+
+
+baseTypes = {
+        'uint8': int,
+        'byte': int,
+        'int': int,
+        'float': float,
+        'double': float,
+        'bool': bool,
+        'long': int,
+        'short': int,
+        'ushort': int,
+        'uint': int,
+        'ulong': int,
+        'int64': int,
+        'uint64': int
     }
 
 
@@ -67,6 +85,7 @@ def GetTypeRead(fieldType):
     elif fieldType == 'LNGRef':
         return 'ReadUInt32'
 
+
 class GenerateScriptType(Enum):
     FieldType = 0
     FindType = 1
@@ -96,7 +115,7 @@ def GetCShapeType(fieldType, isBase=False):
 def GetDataProperty(fieldType, fieldName, script):
     valueType = GetCShapeType(fieldType)
     if 'LNGRef' in fieldType:
-        script.AppendLine(f"private {valueType} {fieldName}Id;")
+        script.AppendLine(f"private uint {fieldName}Id;")
         script.AppendLine(f"public {valueType} {fieldName} => Table{TableLanguageCSName}.Find({fieldName}Id);")
     else:
         script.AppendLine(f"public {valueType} {fieldName};")
@@ -133,9 +152,9 @@ def GetDataAssignment(fieldType, fieldName, script):
         script.AppendLine(f"var {fieldName}Size = reader.ReadUInt16();")
         script.AppendLine(f"{fieldName} = new Dictionary<{GetCShapeType(type1)}, {GetCShapeType(type2)}>();")
         script.BeginFor(f"var {fieldName}Index = 0; {fieldName}Index < {fieldName}Size; {fieldName}Index++")
-        GetDataAssignmentBase(type1, f"key", script)
-        GetDataAssignmentBase(type2, f"value", script)
-        script.AppendLine(f"{fieldName}.Add(key, value);")
+        GetDataAssignmentBase(type1, f"var {fieldName}key", script)
+        GetDataAssignmentBase(type2, f"var {fieldName}value", script)
+        script.AppendLine(f"{fieldName}.Add({fieldName}key, {fieldName}value);")
         script.EndFor()
     elif 'dictionary' in fieldType.lower():
         pattern = r"dictionary\|(\w+)\|(\w+)"
@@ -145,9 +164,9 @@ def GetDataAssignment(fieldType, fieldName, script):
         script.AppendLine(f"var {fieldName}Size = reader.ReadUInt16();")
         script.AppendLine(f"{fieldName} = new Dictionary<{GetCShapeType(type1)}, {GetCShapeType(type2)}>();")
         script.BeginFor(f"var {fieldName}Index = 0; {fieldName}Index < {fieldName}Size; {fieldName}Index++")
-        GetDataAssignmentBase(type1, f"key", script)
-        GetDataAssignmentBase(type2, f"value", script)
-        script.AppendLine(f"{fieldName}.Add(key, value);")
+        GetDataAssignmentBase(type1, f"var {fieldName}key", script)
+        GetDataAssignmentBase(type2, f"var {fieldName}value", script)
+        script.AppendLine(f"{fieldName}.Add({fieldName}key, {fieldName}value);")
         script.EndFor()
     elif 'double_slc' in fieldType.lower():
         script.AppendLine(f"var {fieldName}Size = reader.ReadUInt16();")
@@ -170,7 +189,8 @@ def GetDataAssignment(fieldType, fieldName, script):
 def GetDataAssignmentBase(fieldType, fieldName, script):
     if 'LNGRef' in fieldType:
         script.AppendLine(f"{fieldName}Id = reader.ReadUInt32();")
-    script.AppendLine(f"{fieldName} = reader.{GetTypeRead(fieldType)}();")
+    else:
+        script.AppendLine(f"{fieldName} = reader.{GetTypeRead(fieldType)}();")
 
 
 def GetFieldProperty(fieldType, fieldName, fieldValue, script):
@@ -275,13 +295,14 @@ def TurnBytes(fieldType, fieldValue):
         type2 = matches[0][1]
         size = 0
         tByte = b''
-        for singleValue in fieldValue.split('|'):
-            qByte, qSize = SingleTurnBytes(type1, singleValue.split(':')[0])
-            tByte += qByte
-            size += qSize
-            qByte, qSize = SingleTurnBytes(type2, singleValue.split(':')[1])
-            tByte += qByte
-            size += qSize
+        if not pd.isna(fieldValue):
+            for singleValue in fieldValue.split('|'):
+                qByte, qSize = SingleTurnBytes(type1, singleValue.split(':')[0])
+                tByte += qByte
+                size += qSize
+                qByte, qSize = SingleTurnBytes(type2, singleValue.split(':')[1])
+                tByte += qByte
+                size += qSize
         byte = struct.pack(f"{typeMap[SizeMap][0]}", size) + tByte
         size += typeMap[SizeMap][1]
         return byte, size
@@ -326,10 +347,9 @@ def TurnBytes(fieldType, fieldValue):
 def SingleTurnBytes(fieldType, fieldValue):
     if fieldType in typeMap:
         fmt, size = typeMap[fieldType]
-        return struct.pack(fmt, fieldValue), size
+        return struct.pack(fmt, GetBaseType(fieldType)(fieldValue)), size
     elif fieldType == 'string':
-        fieldValue = str(fieldValue)
-        if fieldValue == 'nan':
+        if pd.isna(fieldValue):
             byte = struct.pack(f"{typeMap[SizeMap][0]}", 0)
             size = typeMap[SizeMap][1]
             return byte, size
@@ -339,14 +359,17 @@ def SingleTurnBytes(fieldType, fieldValue):
         size = typeMap[SizeMap][1] + strSize
         return byte, size
     elif fieldType == 'LNGRef':
-        fieldValue = str(fieldValue)
-        if fieldValue == 'nan':
+        if pd.isna(fieldValue):
             struct.pack('I', 0), 4
         return struct.pack('I', GetLanguageKey(fieldValue)), 4
     else:
         sys.stderr.write(f"Error: Unknown field type '{fieldType}'\n")
         input("Press Enter to exit...")
         sys.exit()
+
+
+def GetBaseType(fieldType):
+    return baseTypes.get(fieldType, fieldType)
 
 
 def CopyScripts():

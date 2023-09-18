@@ -15,7 +15,7 @@ def GenerateFindBytes(excelPath, sheetName, scriptName=None):
     isNeedSize = IsNeedRecordSize(excelData)
     data_bytes = TurnBytesByExcel(excelData, 4, 0, isNeedSize, GenerateScriptType.FindType)
     # 获取第一行包含'c'的列
-    filteredColumns = excelData.columns[excelData.iloc[0].str.contains('c', case=False)]
+    filteredColumns = excelData.columns[excelData.iloc[0].fillna('').str.contains('c', case=False)]
     pair = []
     for index, col in enumerate(filteredColumns):
         kv = [excelData.iloc[1, col], excelData.iloc[2, col]]
