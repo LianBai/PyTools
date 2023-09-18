@@ -5,7 +5,7 @@ from openpyxl import load_workbook
 from LogUtil import ShowLog
 from PathUtil import LanguageXlsxPath
 
-IsUpdateLng = False
+IsUpdateLng = True
 CNLanguage = 'cn'
 LanguageKey = ['tw', 'en']
 LanguageDict = {}
@@ -27,10 +27,12 @@ def SaveLanguage():
     ShowLog('保存语言表')
     SaveLangData(CNLanguage, LanguageDict[CNLanguage])
     if IsUpdateLng:
-        languageDict = {}
+        languageDict = {CNLanguage: {}}
         for key, value in LanguageDict[CNLanguage].items():
-            languageDict[key] = value
+            languageDict[CNLanguage][key] = value
             for keyLng in LanguageKey:
+                if keyLng not in languageDict.keys():
+                    languageDict[keyLng] = {}
                 if key in LanguageDict[keyLng].keys():
                     languageDict[keyLng][key] = LanguageDict[keyLng][key]
                 else:
@@ -44,18 +46,7 @@ def ReadLangData(key):
     # 读取Excel文件
     df = pd.read_excel(LanguageXlsxPath, sheet_name=None, header=None)
     # 判断是否包含名为key的页签
-    if key not in df.keys():
-        df = pd.DataFrame(columns=['c', 'c'])
-        df.loc[1] = ['ID', 'text']
-        df.loc[2] = ['uint', 'string']
-        df.loc[3] = ['编号', '文本']
-        lng = {}
-        for key, value in LanguageDict[CNLanguage].items():
-            df.loc[len(df)] = [key, value]
-            lng[key] = value
-        LanguageDict[key] = lng
-        SaveLangData(key, lng)
-    else:
+    if key in df.keys():
         df = pd.read_excel(LanguageXlsxPath, sheet_name=key)
         keyLng = {}
         for index, row in df.iloc[3:].iterrows():
@@ -66,8 +57,15 @@ def ReadLangData(key):
 def SaveLangData(key, data):
     ShowLog(f'保存语言表数据: {key}')
     workbook = load_workbook(filename=LanguageXlsxPath)
-    worksheet = workbook.get_sheet_by_name(key)
-    worksheet.delete_rows(5, worksheet.max_row)
+    if key not in workbook.sheetnames:
+        worksheet = workbook.create_sheet(key)
+        worksheet.append(['c', 'c'])
+        worksheet.append(['ID', 'text'])
+        worksheet.append(['uint', 'string'])
+        worksheet.append(['编号', '文本'])
+    else:
+        worksheet = workbook.get_sheet_by_name(key)
+        worksheet.delete_rows(5, worksheet.max_row)
     for key, value in data.items():
         worksheet.append([key, value])
     workbook.save(LanguageXlsxPath)

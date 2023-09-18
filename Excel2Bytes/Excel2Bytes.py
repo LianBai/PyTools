@@ -2,7 +2,6 @@ import os
 
 from ExcelUtil import CopyScripts, CopyBytes
 from FieldGenerate import GenerateFieldBytes, GenerateLNGBytes
-from FindGenerate import GenerateFindBytes
 from LanguageUtil import InitLanguage, SaveLanguage, TableLanguageCSName
 from PathUtil import InitFileDir, TablePath
 from ResRefUtil import SaveResList
